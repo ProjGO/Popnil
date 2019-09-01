@@ -67,7 +67,7 @@ GtkWidget * sign()
     vbox = gtk_vbox_new(TRUE, 1);
     hbox = gtk_hbox_new(TRUE, 1);
 
-    GtkWidget * sign_image=gtk_image_new_from_file("../images/sign1.jpg");
+    GtkWidget * sign_image=gtk_image_new_from_file("../client/images/sign1.jpg");
     gtk_container_add(GTK_CONTAINER(hbox), sign_image);
 
     gtk_box_pack_start(GTK_BOX(hbox1), nickname_label, TRUE, FALSE, 1);	//将nickname编辑框添加到hbox1中
