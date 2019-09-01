@@ -2,6 +2,7 @@ grant select, insert, update, delete, create, drop
 	on `linpop`.*
 	to 'ProjGO'@'localhost'
 	identified by '1234';
+drop database `linpop`;
 create database `linpop`;
 use `linpop`;
 create table `userinfo`
@@ -23,10 +24,12 @@ create table `groupinfo`
 );
 create table `friendship`
 (
-	`idA` int,
-	foreign key (`idA`) references `userinfo`(`id`),
-	`idB` int,
-	foreign key (`idB`) references `userinfo`(`id`),
+	`idord` int,
+	foreign key (`idord`) references `userinfo`(`id`),
+	`idnew` int,
+	foreign key (`idnew`) references `userinfo`(`id`),
+	check (`idord` < `idnew`),
+	primary key (`idord`, `idnew`),
 	`anniversary` date
 );
 create table `membership`
@@ -35,6 +38,7 @@ create table `membership`
 	foreign key (`gid`) references `groupinfo`(`id`),
 	`uid` int,
 	foreign key (`uid`) references `userinfo`(`id`),
+	primary key (`gid`, `uid`),
 	permission int
 );
 create table `usermessage`
