@@ -10,6 +10,8 @@
 #define MAX_PWD_LEN 512
 #define MAX_MSG_LEN 512
 
+typedef enum OP_TYPE {LOGIN, LOGON,ADD_FRIEND,ADD_GROUP,QUIT_GROUP} OP_TYPE;
+
 typedef struct login_info_c2s
 {
     int id;
