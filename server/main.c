@@ -46,8 +46,19 @@ int main(int argc, char **argv)
 
         if(FD_ISSET(listenfd, &pool.ready_set))
         {
+            enum OP_TYPE op;
             connfd = Accept(listenfd, (struct sockaddr *)&clientaddr, &clientlen);
-            //
+            rio_t newclient;
+            rio_readinitb(&newclient,connfd);
+            Rio_readlineb(&newclient,op,sizeof(OP_TYPE));
+            switch(op)
+            {
+                case LOGIN:
+                {
+
+                }
+            }
+
             add_client(connfd, &pool);
         }
 
