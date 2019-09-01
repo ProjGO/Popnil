@@ -6,9 +6,9 @@
 #include <stdio.h>
 #include <string.h>
 
-const char* userid = "12345678";
 
-GtkWidget * sign_success()
+
+GtkWidget * sign_success(char * userid)
 {
     GtkWidget *window;
     GtkWidget * vbox;
