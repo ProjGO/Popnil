@@ -7,5 +7,5 @@
 int operate_friend(new_friend_info * s)
 {
     //将两者id存入数据库
-    switch(s->type)
+    switch(s->type);
 }
