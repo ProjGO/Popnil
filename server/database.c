@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 #include <stdlib.h>
 #include <stdio.h>
 #include <mysql/mysql.h>
+#include <stdbool.h>
+=======
+#include "database.h"
+>>>>>>> de9c8ebce608093c12c39ccd84552e769fb95409
 
 const char DB_HOST[] = "localhost";
 const char DB_USER[] = "ProjGO";
@@ -23,17 +28,17 @@ MYSQL* connect_db (void)
       free (pconn);
       pconn = NULL;
     }
-  printf (" connect to %s at %s@%s", DB_NAME, DB_USER, DB_HOST);
+  printf (" connect to %s at %s@%s\n", DB_NAME, DB_USER, DB_HOST);
   return pconn;
 
 
 }
 
-int isuser (const int id, const char passwd[])
+bool isuser (const int id, const char passwd[])
 {
   MYSQL *pconn;
   MYSQL_RES *res;
-  int ans = 0;
+  bool ans = false;
 
   if ( (pconn= connect_db ()) != NULL )
     {
@@ -42,14 +47,14 @@ int isuser (const int id, const char passwd[])
       if ( !mysql_query (pconn, comm))
         {
           res = mysql_store_result (pconn);
-          ans = mysql_num_rows (res);
+          ans = ( mysql_num_rows (res) > 0 );
           mysql_free_result (res);
           mysql_close (pconn);
           free (pconn);
         }
       else
         {
-          puts ("Failed to query!");
+          puts ("Failed to query while judging user!");
         }
     }
 
@@ -71,10 +76,10 @@ int adduser (const char nick[], const char passwd[])
         {
           res = mysql_store_result (pconn);
           id = mysql_num_rows (res);
-          sprintf (comm, "insert into `userinfo` values (%d, '%s', '%s', null, null, null, null;", id, nick, passwd);
+          sprintf (comm, "insert into `userinfo` values (%d, '%s', '%s', null, null, null, null);", id, passwd, nick);
           if ( mysql_query (pconn, comm))
             {
-              puts ("Failed to query!");
+              puts ("Failed to query while adding user!");
               id = -1;
             }
           mysql_free_result (res);
@@ -83,9 +88,124 @@ int adduser (const char nick[], const char passwd[])
         }
       else
         {
-          puts ("Failed to query!");
+          puts ("Failed to query while counting users!");
         }
     }
 
   return id;
+}
+
+bool addfriendship (int idA, int idB)
+{
+  int idord, idnew;
+  if ( idA < idB )
+    {
+      idord = idA;
+      idnew = idB;
+    }
+  else
+    {
+      idord = idB;
+      idnew = idA;
+    }
+  MYSQL *pconn;
+  MYSQL_RES *res;
+  bool suc = false;
+  if ( (pconn= connect_db ()) != NULL )
+    {
+      char comm[1024] = "\0";
+      sprintf (comm, "select * from `friendship` where `idord` = %d and `idnew` = '%d';", idord, idnew);
+      if ( !mysql_query (pconn, comm))
+        {
+          res = mysql_store_result (pconn);
+          if ( mysql_num_rows (res) > 0)
+            {
+              suc = true;
+            }
+          else
+            {
+              sprintf (comm, "insert into `friendship` values (%d, %d, curdate());", idord, idnew);
+              if ( !mysql_query (pconn, comm))
+                {
+                  suc = true;
+                }
+              else
+                {
+                  puts ("Failed to query while adding friendship!");
+                }
+            }
+          mysql_free_result (res);
+          mysql_close (pconn);
+          free (pconn);
+        }
+      else
+        {
+          puts ("Failed to query while counting friendships!");
+        }
+    }
+  return suc;
+}
+
+bool deletefriendship (int idA, int idB)
+{
+  int idord, idnew;
+  if ( idA < idB )
+    {
+      idord = idA;
+      idnew = idB;
+    }
+  else
+    {
+      idord = idB;
+      idnew = idA;
+    }
+  MYSQL *pconn;
+  MYSQL_RES *res;
+  bool suc = false;
+  if ( (pconn= connect_db ()) != NULL )
+    {
+      char comm[1024] = "\0";
+      sprintf (comm, "select * from `friendship` where `idord` = %d and `idnew` = '%d';", idord, idnew);
+      if ( !mysql_query (pconn, comm))
+        {
+          res = mysql_store_result (pconn);
+          if ( mysql_num_rows (res) == 0)
+            {
+              suc = true;
+            }
+          else
+            {
+              sprintf (comm, "delete from `friendship` where `idord` = %d and `idnew` = %d;", idord, idnew);
+              if ( !mysql_query (pconn, comm))
+                {
+                  suc = true;
+                }
+              else
+                {
+                  puts ("Failed to query while deleting friendships!");
+                }
+            }
+          mysql_free_result (res);
+          mysql_close (pconn);
+          free (pconn);
+        }
+      else
+        {
+          puts ("Failed to query while counting friendships!");
+        }
+    }
+  return suc;
+}
+
+int main ()
+{
+  if ( deletefriendship (0, 1) )
+    {
+      puts("👀");
+    }
+  else
+    {
+      puts("😂");
+    }
+  return 0;
 }

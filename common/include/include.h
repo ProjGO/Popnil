@@ -19,3 +19,7 @@
 #include "../include/define.h"
 
 #endif //LINPOP_INCLUDE_H
+
+extern int FD_log[100];
+extern int FD_chat[100];
+extern int FD_file[100];
