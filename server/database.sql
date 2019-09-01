@@ -1,5 +1,9 @@
-create database linpop;
-use linpop;
+grant select, insert, update, delete, create, drop
+	on `linpop`.*
+	to 'ProjGO'@'localhost'
+	identified by '1234';
+create database `linpop`;
+use `linpop`;
 create table `userinfo`
 (
 	`id` int,
