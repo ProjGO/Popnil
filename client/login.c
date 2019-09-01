@@ -4,6 +4,7 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include <string.h>
+#include "../common/include/include.h"
 
 extern GtkWidget * sign();
 extern void list();
@@ -11,7 +12,7 @@ const char * password = "secret";
 
 void button_clicked (GtkWidget *window, gpointer data)
 {
-    const char *password_text = gtk_entry_get_text(GTK_ENTRY((GtkWidget *) data));
+    const char *password_text = ((reg_info_c2s *) data)->pwd;
 
     if (strcmp(password_text, password) == 0)
         printf("Access granted!\n");

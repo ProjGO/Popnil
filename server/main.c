@@ -51,7 +51,8 @@ int main(int argc, char **argv)
             fd_log = Accept(listenfd, (struct sockaddr *)&clientaddr, &clientlen);
             rio_t newclient;
             rio_readinitb(&newclient,fd_log);
-            Rio_readlineb(&newclient,&op,sizeof(OP_TYPE));
+            Rio_readnb(&newclient,&op,sizeof(OP_TYPE));
+//            read(fd_log,&op, sizeof(OP_TYPE));
             switch(op)
             {
                 case LOGIN: //登录功能
@@ -84,7 +85,8 @@ int main(int argc, char **argv)
                 case REGISTER: //注册功能
                 {
                     reg_info_c2s *s=(reg_info_c2s*)malloc(sizeof(reg_info_c2s));
-                    Rio_readlineb(&newclient,s,sizeof(s));
+                    Rio_readlineb(&newclient,s,sizeof(reg_info_c2s));
+//                    read(fd_log,s,sizeof(reg_info_c2s));
                     response_s2c *flag=reg(s);
                     Rio_writen(fd_log,flag, sizeof(response_s2c));
                     free(s);

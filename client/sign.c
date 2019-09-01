@@ -4,23 +4,58 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include <string.h>
-
+#include "../common/include/include.h"
+#define DEFAULT_IP "127.0.0.1"
 extern GtkWidget * sign_success();
-
+GtkWidget *nickname_entry, *password_entry;
 int sign_clicked (GtkWidget *window, gpointer data)
 {
-    const char *password_text = gtk_entry_get_text(GTK_ENTRY((GtkWidget *) data));
-    unsigned long len = strlen(password_text);
+    reg_info_c2s *reg_text=(reg_info_c2s*)malloc(sizeof(reg_info_c2s));
+    strcpy(reg_text->name,gtk_entry_get_text(GTK_ENTRY((GtkWidget *) nickname_entry)));
+    strcpy(reg_text->pwd,gtk_entry_get_text(GTK_ENTRY((GtkWidget *) password_entry)));
+    unsigned long len = strlen(reg_text->pwd);
 //    printf("hahah\n");
     if(len >= 3 && len <=12)
     {
         printf("sign up successfully!\n");
+        /*///////////////////////////////////////////////*/
+        int socketfd;
+        int myport=8088;
+        struct sockaddr_in pin_addr;
+        bzero(&pin_addr, sizeof(pin_addr));
+        pin_addr.sin_family = AF_INET;
+        pin_addr.sin_addr.s_addr = inet_addr(DEFAULT_IP);
+        pin_addr.sin_port = htons(myport);
+        if ((socketfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+        {
+            printf("can’t create socket\n");
+            exit(1);
+        }
+        if (connect(socketfd, (void*) &pin_addr,sizeof(pin_addr)) == -1)
+        {
+            printf ("Error connecting to socket\n");
+            exit(1);
+        }
+        int flag=1; //表示注册功能
+        if (write(socketfd, &flag, sizeof(int)) == -1 )
+        {
+            printf ("Error in send\n");
+            exit(1);
+        }
+        sleep(1);
+        if (write(socketfd, (reg_info_c2s *) data, sizeof(reg_info_c2s)) == -1 )
+        {
+            printf ("Error in send\n");
+            exit(1);
+        }
+        close(socketfd);
         sign_success();
     }
     else
     {
         printf("密码必长度必须大于三小于12!");
     }
+
     return 0;
 }
 
@@ -28,7 +63,6 @@ GtkWidget * sign()
 {
     GtkWidget *window;
     GtkWidget *nickname_label, *password_label;
-    GtkWidget *nickname_entry, *password_entry;
     GtkWidget *sign_ok_button;
     GtkWidget *hbox1, *hbox2;
     GtkWidget *vbox, *hbox;
@@ -59,7 +93,7 @@ GtkWidget * sign()
     sign_ok_button = gtk_button_new_with_label("注册");
 
     g_signal_connect (sign_ok_button, "clicked",
-                      G_CALLBACK(sign_clicked), password_entry);	//为ok_button链接“单击事件”
+                      G_CALLBACK(sign_clicked), NULL);	//为ok_button链接“单击事件”
 
 
     hbox1 = gtk_hbox_new(TRUE, 1);
