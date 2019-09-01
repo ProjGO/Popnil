@@ -55,25 +55,29 @@ int main(int argc, char **argv)
             Rio_readlineb(&newclient,op,sizeof(OP_TYPE));
             switch(op)
             {
-                case LOGIN: //登陆功能
+                case LOGIN: //登录功能
                 {
                     login_info *s;
                     Rio_readlineb(&newclient,s,sizeof(s));
-                    if(check_login(s))
+                    response_s2c *flag=check_login(s);//标识登录是否成功
+                    if(flag->return_val)
                     {
-                        int flag;//标识登陆是否成功
-                        Rio_writen(fd_log,&flag,sizeof(int));
+                        Rio_writen(fd_log,flag,sizeof(response_s2c));
                         FD_log[s->id]=fd_log;
                         fd_chat = Accept(listenfd, (struct sockaddr *)&clientaddr, &clientlen);
                         fd_file = Accept(listenfd, (struct sockaddr *)&clientaddr, &clientlen);
                         FD_chat[s->id]=fd_chat;
                         FD_file[s->id]=fd_file;
+                        add_client(fd_log, &pool_log);
                         add_client(fd_chat,&pool_chat);
                         add_client(fd_file,&pool_file);
                     }
+                    else
+                    {
+                        Rio_writen(fd_log,&flag,sizeof(int));
+                    }
                 }
             }
-            add_client(fd_log, &pool_log);
         }
 
         check_clients(&pool_log);

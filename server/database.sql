@@ -9,7 +9,7 @@ create table `userinfo`
 	`id` int,
 	primary key (`id`),
 	`passwd` varchar(32),
-	`username` varchar(32),
+	`nick` varchar(32),
 	`bio` varchar(1024),
 	`birthday` date,
 	`ip` int,
