@@ -1,6 +1,4 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <mysql/mysql.h>
+#include "database.h"
 
 const char DB_HOST[] = "localhost";
 const char DB_USER[] = "ProjGO";
