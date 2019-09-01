@@ -21,7 +21,7 @@ void list()
     gtk_container_add(GTK_CONTAINER(window),table);
     g_signal_connect(GTK_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
-    image_usericon = gtk_image_new_from_file("../images/friend_portrait.png");
+    image_usericon = gtk_image_new_from_file("../client/images/friend_portrait.png");
     gtk_table_attach_defaults(GTK_TABLE(table), image_usericon, 0, 1, 0, 1);
 
     label_username = gtk_label_new("XDX");

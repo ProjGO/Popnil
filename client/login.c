@@ -77,11 +77,11 @@ int login (int argc, char *argv[])
     vbox2 = gtk_vbox_new ( FALSE, 1);
 
     frame=gtk_frame_new(NULL);
-    GtkWidget* image=gtk_image_new_from_file("../images/login2.png");
+    GtkWidget* image=gtk_image_new_from_file("../client/images/login2.png");
     gtk_container_add(GTK_CONTAINER(frame),image);
     gtk_container_add(GTK_CONTAINER(vbox), frame);
 
-    GtkWidget * portrait=gtk_image_new_from_file("../images/d_portrait.png");
+    GtkWidget * portrait=gtk_image_new_from_file("../client/images/d_portrait.PNG");
     gtk_container_add(GTK_CONTAINER(hbox0), portrait);
 
     gtk_box_pack_start(GTK_BOX(hbox1), username_entry, TRUE, FALSE, 1);	//将username编辑框添加到hbox1中
