@@ -9,8 +9,9 @@
 #define MAX_NAME_LEN 32
 #define MAX_PWD_LEN 512
 #define MAX_MSG_LEN 512
+#define DEFAULT_PORT 8088
 
-typedef enum OP_TYPE {LOGIN, LOGON,ADD_FRIEND,ADD_GROUP,QUIT_GROUP} OP_TYPE;
+typedef enum OP_TYPE {LOGIN, REGISTER,ADD_FRIEND,ADD_GROUP,QUIT_GROUP} OP_TYPE;
 
 typedef struct login_info_c2s
 {
@@ -18,21 +19,20 @@ typedef struct login_info_c2s
     char pwd[MAX_PWD_LEN];
 } login_info;
 
-typedef struct logon_info_c2s
+typedef struct reg_info_c2s
 {
     char name[MAX_NAME_LEN];
     char pwd[MAX_PWD_LEN];
-} logon_info_c2s;
+} reg_info_c2s;
 
-typedef struct new_friend_info_c2s
+typedef struct new_friend_info
 {
-    int friend_id;
+    int type;//定义信息类型，1：申请加好友c2s 2:申请加好友s2c 3:回应加好友c2s 4:回应加好友s2c;
+    int id_app;//申请方id
+    int id_re;//被申请方id
+    int response;//回应：1：同意 2：拒绝
+    char msg[100];//提示信息
 } new_friend_info;
-
-typedef struct new_friend_request_s2c
-{
-    int friend_id;
-} new_friend_request_s2c;
 
 typedef struct new_group_c2s
 {

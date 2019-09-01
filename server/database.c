@@ -1,7 +1,11 @@
+<<<<<<< HEAD
 #include <stdlib.h>
 #include <stdio.h>
 #include <mysql/mysql.h>
 #include <stdbool.h>
+=======
+#include "database.h"
+>>>>>>> de9c8ebce608093c12c39ccd84552e769fb95409
 
 const char DB_HOST[] = "localhost";
 const char DB_USER[] = "ProjGO";

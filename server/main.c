@@ -4,8 +4,8 @@
 
 #include "../common/include/socket_utils.h"
 #include "../common/include/rio.h"
-#include "login_on_server.h"
-
+#include "login_reg_server.h"
+#include "friend_group_server.h"
 pool pool_log;
 pool pool_chat;
 pool pool_file;
@@ -16,7 +16,7 @@ int FD_file[100];
 
 void init_pool(int listenfd, pool *p);
 void add_client(int connfd, pool *p);
-void check_clients(pool *p);
+int check_clients(pool *p);
 
 int byte_cnt = 0;
 
@@ -29,14 +29,14 @@ int main(int argc, char **argv)
     int listenfd, fd_log, port,fd_chat,fd_file;
     socklen_t clientlen = sizeof(struct sockaddr_in);
     struct sockaddr_in clientaddr;
-
-    if(argc != 2)
-    {
-        fprintf(stderr, "usage: %s <port>\n", argv[0]);
-        exit(0);
-    }
-    port = atoi(argv[1]);
-
+//
+//    if(argc != 2)
+//    {
+//        fprintf(stderr, "usage: %s <port>\n", argv[0]);
+//        exit(0);
+//    }
+//    port = atoi(argv[1]);
+    port=DEFAULT_PORT;
     listenfd = open_listenfd_old(port);
     init_pool(listenfd, &pool_log);
     while(1)
@@ -45,25 +45,25 @@ int main(int argc, char **argv)
         //select在检查ready_set中为1的那些fd，并将ready_set中可以读取的fd对应的位的值设为1，返回可以读取的fd的数量
         //也因此每次都要将ready_set恢复为标记所有要检查的fd的read_set的值（也就是上面那句）
         pool_log.nready = select(pool_log.maxfd+1, &pool_log.ready_set, NULL, NULL, NULL);
-
+        int op;
         if(FD_ISSET(listenfd, &pool_log.ready_set))
         {
-            enum OP_TYPE op;
             fd_log = Accept(listenfd, (struct sockaddr *)&clientaddr, &clientlen);
             rio_t newclient;
             rio_readinitb(&newclient,fd_log);
-            Rio_readlineb(&newclient,op,sizeof(OP_TYPE));
+            Rio_readlineb(&newclient,&op,sizeof(OP_TYPE));
             switch(op)
             {
                 case LOGIN: //登录功能
                 {
-                    login_info *s;
+                    login_info *s=(login_info*)malloc(sizeof(login_info));
                     Rio_readlineb(&newclient,s,sizeof(s));
                     response_s2c *flag=check_login(s);//标识登录是否成功
                     if(flag->return_val)
                     {
                         Rio_writen(fd_log,flag,sizeof(response_s2c));
                         FD_log[s->id]=fd_log;
+                        //新建两个套接字用于聊天与发文件
                         fd_chat = Accept(listenfd, (struct sockaddr *)&clientaddr, &clientlen);
                         fd_file = Accept(listenfd, (struct sockaddr *)&clientaddr, &clientlen);
                         FD_chat[s->id]=fd_chat;
@@ -74,13 +74,44 @@ int main(int argc, char **argv)
                     }
                     else
                     {
-                        Rio_writen(fd_log,&flag,sizeof(int));
+                        Rio_writen(fd_log,flag,sizeof(response_s2c));
+                        close(fd_log);
                     }
+                    free(s);
+                    free(flag);
+                    break;
+                }
+                case REGISTER: //注册功能
+                {
+                    reg_info_c2s *s=(reg_info_c2s*)malloc(sizeof(reg_info_c2s));
+                    Rio_readlineb(&newclient,s,sizeof(s));
+                    response_s2c *flag=reg(s);
+                    Rio_writen(fd_log,flag, sizeof(response_s2c));
+                    free(s);
+                    free(flag);
+                    close(fd_log);
+                    break;
+                }
+                default:printf("参数传递错误\n");break;
+            }
+        }
+        else
+        {
+            fd_log=check_clients(&pool_log);
+            rio_t newclient;
+            rio_readinitb(&newclient,fd_log);
+            Rio_readlineb(&newclient,&op,sizeof(OP_TYPE));
+            switch (op)
+            {
+                case ADD_FRIEND: //添加好友
+                {
+                    new_friend_info * s=(new_friend_info*)malloc(sizeof(new_friend_info));
+                    Rio_readlineb(&newclient,s,sizeof(s));
+                    s->id_app=check_id_log(fd_log);
+                    operate_friend(s);
                 }
             }
         }
-
-        check_clients(&pool_log);
     }
 }
 
@@ -120,7 +151,7 @@ void add_client(int connfd, pool *p)
         fprintf(stderr, "add_client error: too many clients\n");
 }
 
-void check_clients(pool *p)
+int check_clients(pool *p)
 {
     int i, connfd, n;
     char buf[1024];
@@ -136,16 +167,20 @@ void check_clients(pool *p)
             p->nready--;
             if((n=Rio_readlineb(&rio, buf, 1024)) != 0)
             {
-                byte_cnt += n;
-                printf("Server received %d (%d total) bytes on fd %d\n", n, byte_cnt, connfd);
-                Rio_writen(connfd, buf, n);
+                return connfd;
             }
         }
-        else
+    }
+}
+
+int check_id_log(int fd)
+{
+    int i;
+    for(i=0;i<100;i++)
+    {
+        if(FD_log[i]==fd)
         {
-            close(connfd);
-            FD_CLR(connfd, &p->read_set);
-            p->clientfd[i] = -1;
+            return i;
         }
     }
 }
