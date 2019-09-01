@@ -4,16 +4,15 @@
 
 #include "../common/include/socket_utils.h"
 #include "../common/include/rio.h"
+#include "login_on_server.h"
 
-typedef struct pool{
-    int maxfd;
-    fd_set read_set;
-    fd_set ready_set;
-    int nready;
-    int maxi;
-    int clientfd[FD_SETSIZE];
-    rio_t clientrio[FD_SETSIZE];
-} pool;
+pool pool_log;
+pool pool_chat;
+pool pool_file;
+
+int FD_log[100];
+int FD_chat[100];
+int FD_file[100];
 
 void init_pool(int listenfd, pool *p);
 void add_client(int connfd, pool *p);
@@ -23,10 +22,13 @@ int byte_cnt = 0;
 
 int main(int argc, char **argv)
 {
-    int listenfd, connfd, port;
+    memset(FD_log,0, sizeof(FD_log));
+    memset(FD_chat,0, sizeof(FD_chat));
+    memset(FD_file,0,sizeof(FD_file));
+
+    int listenfd, fd_log, port,fd_chat,fd_file;
     socklen_t clientlen = sizeof(struct sockaddr_in);
     struct sockaddr_in clientaddr;
-    static pool pool;
 
     if(argc != 2)
     {
@@ -36,33 +38,45 @@ int main(int argc, char **argv)
     port = atoi(argv[1]);
 
     listenfd = open_listenfd_old(port);
-    init_pool(listenfd, &pool);
+    init_pool(listenfd, &pool_log);
     while(1)
     {
-        pool.ready_set = pool.read_set;
+        pool_log.ready_set = pool_log.read_set;
         //select在检查ready_set中为1的那些fd，并将ready_set中可以读取的fd对应的位的值设为1，返回可以读取的fd的数量
         //也因此每次都要将ready_set恢复为标记所有要检查的fd的read_set的值（也就是上面那句）
-        pool.nready = select(pool.maxfd+1, &pool.ready_set, NULL, NULL, NULL);
+        pool_log.nready = select(pool_log.maxfd+1, &pool_log.ready_set, NULL, NULL, NULL);
 
-        if(FD_ISSET(listenfd, &pool.ready_set))
+        if(FD_ISSET(listenfd, &pool_log.ready_set))
         {
             enum OP_TYPE op;
-            connfd = Accept(listenfd, (struct sockaddr *)&clientaddr, &clientlen);
+            fd_log = Accept(listenfd, (struct sockaddr *)&clientaddr, &clientlen);
             rio_t newclient;
-            rio_readinitb(&newclient,connfd);
+            rio_readinitb(&newclient,fd_log);
             Rio_readlineb(&newclient,op,sizeof(OP_TYPE));
             switch(op)
             {
-                case LOGIN:
+                case LOGIN: //登陆功能
                 {
-
+                    login_info *s;
+                    Rio_readlineb(&newclient,s,sizeof(s));
+                    if(check_login(s))
+                    {
+                        int flag;//标识登陆是否成功
+                        Rio_writen(fd_log,&flag,sizeof(int));
+                        FD_log[s->id]=fd_log;
+                        fd_chat = Accept(listenfd, (struct sockaddr *)&clientaddr, &clientlen);
+                        fd_file = Accept(listenfd, (struct sockaddr *)&clientaddr, &clientlen);
+                        FD_chat[s->id]=fd_chat;
+                        FD_file[s->id]=fd_file;
+                        add_client(fd_chat,&pool_chat);
+                        add_client(fd_file,&pool_file);
+                    }
                 }
             }
-
-            add_client(connfd, &pool);
+            add_client(fd_log, &pool_log);
         }
 
-        check_clients(&pool);
+        check_clients(&pool_log);
     }
 }
 

@@ -79,4 +79,13 @@ typedef struct file_request_s2c
 
 } file_requese_s2c;
 
+typedef struct pool{
+    int maxfd;
+    fd_set read_set;
+    fd_set ready_set;
+    int nready;
+    int maxi;
+    int clientfd[FD_SETSIZE];
+    rio_t clientrio[FD_SETSIZE];
+} pool;
 #endif //LINPOP_DEFINE_H

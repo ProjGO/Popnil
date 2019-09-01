@@ -3,7 +3,7 @@ project(Linpop C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(server server/main.c common/srcs/socket_utils.c common/srcs/rio.c)
+add_executable(server server/main.c common/srcs/socket_utils.c common/srcs/rio.c server/login_on_server.cpp server/login_on_server.h)
 
 add_executable(client client/main.c common/srcs/socket_utils.c common/srcs/rio.c)
 
