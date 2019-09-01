@@ -13,7 +13,7 @@ include_directories(/common/include/)
 
 target_link_libraries(server pthread)
 FIND_PACKAGE(PkgConfig REQUIRED)
-PKG_CHECK_MODULES(GTK3 REQUIRED gtk+-2.0)
+PKG_CHECK_MODULES(GTK3 REQUIRED gtk+-3.0)
 
 INCLUDE_DIRECTORIES(${GTK3_INCLUDE_DIRS})
 LINK_DIRECTORIES(${GTK3_LIBRARY_DIRS})
