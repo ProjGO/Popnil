@@ -42,8 +42,7 @@ int sign_clicked (GtkWidget *window, gpointer data)
             printf ("Error in send\n");
             exit(1);
         }
-        sleep(1);
-        if (write(socketfd, (reg_info_c2s *) data, sizeof(reg_info_c2s)) == -1 )
+        if (write(socketfd, reg_text, sizeof(reg_info_c2s)) == -1 )
         {
             printf ("Error in send\n");
             exit(1);

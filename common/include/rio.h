@@ -19,7 +19,6 @@ ssize_t Rio_readn(int fd, void *ptr, size_t nbytes);
 
 /*向fd中写usrbuf指向的n个字节*/
 void Rio_writen(int fd, void *usrbuf, size_t n);
-void rio_writen(int fd, void *usrbuf, size_t n);
 
 /*以下均为buffered*/
 /*初始化一个rio_t*/
