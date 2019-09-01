@@ -1,14 +1,14 @@
 #include <gtk/gtk.h>
 
 
-void list(int argc,char *argv[])
+void list()
 {
     GtkWidget *window;
     GtkWidget *table;
     GtkWidget *image_usericon;
     GtkWidget *label_username;
 
-    gtk_init(&argc, &argv);
+//    gtk_init(&argc, &argv);
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_position(GTK_WINDOW(window),GTK_WIN_POS_CENTER);
     gtk_window_set_default_size(GTK_WINDOW(window),200,500);
