@@ -1,0 +1,21 @@
+/home/xdx/下载/CLion-2018.1.4/clion-2018.1.4/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/xdx/CLionProjects/MyGtk
+-- The C compiler identification is GNU 8.3.1
+-- The CXX compiler identification is GNU 8.3.1
+-- Check for working C compiler: /usr/bin/cc
+-- Check for working C compiler: /usr/bin/cc -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Check for working CXX compiler: /usr/bin/c++
+-- Check for working CXX compiler: /usr/bin/c++ -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found PkgConfig: /usr/bin/pkg-config (found version "1.5.3") 
+-- Checking for module 'gtk+-2.0'
+--   Found gtk+-2.0, version 2.24.32
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/xdx/CLionProjects/MyGtk/cmake-build-debug

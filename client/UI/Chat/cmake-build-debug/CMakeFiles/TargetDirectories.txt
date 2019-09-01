@@ -1,0 +1,3 @@
+/home/xdx/CLionProjects/Chat/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/xdx/CLionProjects/Chat/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/xdx/CLionProjects/Chat/cmake-build-debug/CMakeFiles/Chat.dir

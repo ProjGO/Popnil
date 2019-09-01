@@ -1,0 +1,14 @@
+cmake_minimum_required(VERSION 3.10)
+project(Chat)
+
+set(CMAKE_CXX_STANDARD 14)
+
+add_executable(Chat list.c chat.c cmake-build-debug/main.c)
+
+FIND_PACKAGE(PkgConfig REQUIRED)
+PKG_CHECK_MODULES(GTK3 REQUIRED gtk+-2.0)
+
+INCLUDE_DIRECTORIES(${GTK3_INCLUDE_DIRS})
+LINK_DIRECTORIES(${GTK3_LIBRARY_DIRS})
+
+TARGET_LINK_LIBRARIES(Chat ${GTK3_LIBRARIES})
