@@ -10,5 +10,5 @@
 #endif //LINPOP_LOGIN_ON_SERVER_H
 
 
-bool check_login(login_info *temp);
-bool logon(logon_info_c2s *temp);
+response_s2c* check_login(login_info *temp);
+response_s2c* logon(logon_info_c2s *temp);

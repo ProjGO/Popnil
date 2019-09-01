@@ -51,7 +51,7 @@ typedef struct quit_group_c2s
 
 typedef struct response_s2c
 {
-    int return_val;
+    int return_val; //0表示操作失败，1表示操作成功
     char err_msg[MAX_MSG_LEN];
 } response_s2c;
 
