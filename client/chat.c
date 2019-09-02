@@ -439,7 +439,7 @@ int main(int argc,char *argv[])
     gtk_table_attach_defaults(GTK_TABLE(table1),hbox1,0,3,0,1);
     gtk_container_add(GTK_CONTAINER(frame1),table1);
 
-    table_chat = gtk_table_new(1,1,TRUE);
+    table_chat = gtk_table_new(2,1,TRUE);
     llist = sungtk_clist_new();
     sungtk_clist_set_row_height(llist,50);
     sungtk_clist_set_col_width(llist,200);
@@ -460,9 +460,10 @@ int main(int argc,char *argv[])
     sungtk_clist_append(llist, ": aaaaaaaaaaaaaa","../client/images/head_48.png","mmdzb");
     sungtk_clist_append(llist, ": aaaaaaaaaaaaaa","../client/images/head_48.png","mmdzb");
     sungtk_clist_append(llist, ": aaaaaaaaaaaaaa","../client/images/head_48.png","mmdzb");
+    sungtk_clist_append(llist, ": aaaaaaaaaaaaaa","../client/images/head_48.png","mmdzb");
     sungtk_clist_set_foreground(llist, "red");
     sungtk_clist_set_row_data(llist, 2, ": ***********");
-    gtk_container_add(GTK_CONTAINER(scrlled_window),table_chat);
+    gtk_scrolled_window_add_with_viewport(scrlled_window,table_chat);
 
     font = gtk_image_new_from_file("../client/images/font.png");
     emoji = gtk_image_new_from_file("../client/images/emoji.png");

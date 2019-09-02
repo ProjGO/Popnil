@@ -5,7 +5,7 @@ set(CMAKE_C_STANDARD 99)
 
 add_executable(server server/main.c common/srcs/socket_utils.c common/srcs/rio.c server/login_reg_server.h server/login_reg_server.c server/friend_group_server.c server/friend_group_server.h server/database.c server/database.h)
 
-add_executable(client client/chat.c )
+add_executable(client client/chat_new.c client/tools.c client/tools.h client/emoji.c)
 
 
 
@@ -13,7 +13,7 @@ include_directories(/common/include/)
 
 target_link_libraries(server pthread)
 FIND_PACKAGE(PkgConfig REQUIRED)
-PKG_CHECK_MODULES(GTK3 REQUIRED gtk+-3.0)
+PKG_CHECK_MODULES(GTK3 REQUIRED gtk+-2.0)
 
 INCLUDE_DIRECTORIES(${GTK3_INCLUDE_DIRS})
 LINK_DIRECTORIES(${GTK3_LIBRARY_DIRS})
