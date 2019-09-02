@@ -5,6 +5,9 @@
 #ifndef LINPOP_DEFINE_H
 #define LINPOP_DEFINE_H
 
+#include "rio.h"
+
+
 #define TIME_INFO_LEN 20 // YYYY_MM_DD_HH_MM_SS
 #define MAX_NAME_LEN 32
 #define MAX_PWD_LEN 512

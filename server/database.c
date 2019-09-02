@@ -1,9 +1,11 @@
+
 #include "database.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <mysql/mysql.h>
 #include <stdbool.h>
+
 
 #include <time.h>
 
@@ -430,6 +432,7 @@ bool addgroupmessage (const time_t t, const int masterid, const int goalid, cons
   return suc;
 }
 
+
 int main ()
 {
   int gid;
@@ -451,3 +454,17 @@ int main ()
   deletefriendship (1, 0);
   return 0;
 }
+
+//int main ()
+//{
+//  if ( deletefriendship (0, 1) )
+//    {
+//      puts("👀");
+//    }
+//  else
+//    {
+//      puts("😂");
+//    }
+//  return 0;
+//}
+

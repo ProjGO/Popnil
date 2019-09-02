@@ -14,6 +14,8 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
+
 #include "../include/rio.h"
 #include "../include/socket_utils.h"
 #include "../include/define.h"

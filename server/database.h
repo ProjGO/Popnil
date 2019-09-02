@@ -5,6 +5,7 @@
 #ifndef LINPOP_DATABASE_H
 #define LINPOP_DATABASE_H
 
+#include <stdbool.h>
 #endif //LINPOP_DATABASE_H
 
 #include <stdlib.h>
@@ -31,3 +32,4 @@ bool setpermission (const int gid, const int uid, enum Permission permission);
 bool setpermission (const int gid, const int uid, enum Permission permission);
 bool addusermessage (const time_t t, const int masterid, const int goalid, const char text[]);
 bool addgroupmessage (const time_t t, const int masterid, const int goalid, const char text[]);
+
