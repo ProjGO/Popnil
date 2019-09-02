@@ -14,9 +14,13 @@ int get_fd_by_id(int id);
 
 void *thread_chat(void *vargp)
 {
-    int connfd, n;
-    char buf[1024]; // 接收消息用的buf
-    char pic_buf[MAX_PIC_SIZE]; // 接收图片用的buf
+    int connfd;
+
+    size_t *buf = malloc(sizeof(pic_pack_t)); // 接收消息用的buf,既用来接收消息内容，又作数据包的缓存,最大也就可能装图片包了
+    general_array target_ids_array;
+    text_pack_t text_pack_s2c; // 服务器要转发出去的消息包
+    pic_pack_t pic_pack_s2c; // 服务器要转发出去的图片包
+
     rio_t *rio; // ==========================
     while(1) {
         pool_chat.ready_set = pool_chat.ready_set;
@@ -25,13 +29,12 @@ void *thread_chat(void *vargp)
             connfd = pool_chat.clientfd[i]; // 现在在检查的这个connfd
             rio = &pool_chat.clientrio[i]; // 现在在检查的这个connfd对应的rio_t
             MSG_TYPE msg_type; // 接收到的消息的类型
-            text_pack_t text_pack_s2c; // 服务器要转发出去的消息包
             int target_fd; // 要转发的目标的fd
 
             if ((connfd > 0) && (FD_ISSET(connfd, &pool_chat.ready_set))) // 如果正在检查的这个connfd确实可以读取
             {
                 pool_chat.nready--; //
-                rio_readlineb(rio, buf, sizeof(MSG_TYPE)); // 先从这个connfd读取消息类型
+                rio_readlineb(rio, buf, MAX_MSG_LEN); // 先从这个connfd读取消息类型
                 sscanf(buf, "%d", &msg_type); // 字符串->数字
                 printf("received msg_type %d from user %d\n", msg_type, get_id_by_fd(connfd));
                 switch (msg_type) {
@@ -39,10 +42,11 @@ void *thread_chat(void *vargp)
                         if (rio_readnb(rio, buf, sizeof(text_pack_t))>=0) // 如果成功将消息包接收到buf指向的内存中
                         {
                             text_pack_t *text_pack_c2s = (text_pack_t *) buf; // 类型转换
-                            general_array target_ids_array;
+                            int *target_ids = (int *) target_ids_array.data; // 类型转换以读取array中的内容
+                            // 调试用-------------------------------
                             target_ids_array.num  = 1;
-                            int *target_ids = (int *) target_ids_array.data;
                             target_ids[0] = text_pack_c2s->id;
+                            // ------------------------------------
                             for (int j = 0; j < target_ids_array.num; j++) {
                                 target_fd = get_fd_by_id(target_ids[j]); // 获取目标fd
                                 text_pack_s2c.id = get_id_by_fd(connfd); // 获取发送者id并填写消息包字段
@@ -54,11 +58,22 @@ void *thread_chat(void *vargp)
                         break;
                     }
                     case PIC: {
-                        int pic_size; // 照片的大小
-                        rio_readnb(rio, &pic_size, sizeof(int));
-
-                        // 将图片保存在本地
-                        // 将图片显示在聊天框中
+//                        int pic_size; // 照片的大小
+//                        rio_readnb(rio, &pic_size, sizeof(int)); // 得到图片大小
+                        rio_readnb(rio, &buf, sizeof(pic_pack_t)); // 接收图片包到buf
+                        pic_pack_t *pic_pack_c2s = (pic_pack_t*)buf;
+                        memcpy(pic_pack_s2c.data, pic_pack_c2s->data, pic_pack_c2s->size); // 将图片填如待发出的数据包
+                        int *target_ids = (int *) target_ids_array.data; // 类型转换以读取array中的内容
+                        // 调试用-------------------------------
+                        target_ids_array.num  = 1;
+                        target_ids[0] = pic_pack_c2s->id;
+                        // ------------------------------------
+                        for (int j = 0; j < target_ids_array.num; j++) {
+                            target_fd = get_fd_by_id(target_ids[j]); // 获取目标fd
+                            pic_pack_s2c.id = get_id_by_fd(connfd); // 获取发送者id并填写消息包字段
+                            rio_writen(target_fd, &pic_pack_s2c, sizeof(pic_pack_s2c)); // 发送消息包
+                            printf("%d: send a picture\n", text_pack_s2c.id);
+                        }
                     }
                     default:;
                 }

@@ -76,6 +76,14 @@ typedef struct text_pack_t
     char text[MAX_MSG_LEN];
 } text_pack_t;
 
+typedef struct pic_pack_t
+{
+    int id;
+    int size; // 图片大小
+    char time;
+    size_t *data;
+} pic_pack_t;
+
 typedef struct file_request_s2c
 {
     int source_id;
