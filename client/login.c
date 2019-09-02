@@ -6,6 +6,7 @@
 #include <string.h>
 #include "../common/include/socket_utils.h"
 #include "../common/include/include.h"
+#include "../common/include/define.h"
 
 extern GtkWidget * sign();
 extern void list();

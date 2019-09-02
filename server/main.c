@@ -51,18 +51,18 @@ int main(int argc, char **argv)
             fd_log = Accept(listenfd, (struct sockaddr *)&clientaddr, &clientlen);
             rio_t newclient;
             rio_readinitb(&newclient,fd_log);
-            Rio_readnb(&newclient,&op,sizeof(OP_TYPE));
+            rio_readnb(&newclient,&op,sizeof(OP_TYPE));
 //            read(fd_log,&op, sizeof(OP_TYPE));
             switch(op)
             {
                 case LOGIN: //登录功能
                 {
                     login_info *s=(login_info*)malloc(sizeof(login_info));
-                    Rio_readlineb(&newclient,s,sizeof(login_info));
+                    rio_readlineb(&newclient,s,sizeof(login_info));
                     response_s2c *flag=check_login(s);//标识登录是否成功
                     if(flag->return_val)
                     {
-                        Rio_writen(fd_log,flag,sizeof(response_s2c));
+                        rio_writen(fd_log,flag,sizeof(response_s2c));
                         FD_log[s->id]=fd_log;
                         //新建两个套接字用于聊天与发文件
                         fd_chat = Accept(listenfd, (struct sockaddr *)&clientaddr, &clientlen);
@@ -75,7 +75,7 @@ int main(int argc, char **argv)
                     }
                     else
                     {
-                        Rio_writen(fd_log,flag,sizeof(response_s2c));
+                        rio_writen(fd_log,flag,sizeof(response_s2c));
                         close(fd_log);
                     }
                     free(s);
@@ -85,10 +85,10 @@ int main(int argc, char **argv)
                 case REGISTER: //注册功能
                 {
                     reg_info_c2s *s=(reg_info_c2s*)malloc(sizeof(reg_info_c2s));
-                    Rio_readnb(&newclient, s, sizeof(reg_info_c2s));
+                    rio_readnb(&newclient, s, sizeof(reg_info_c2s));
 //                    read(fd_log,s,sizeof(reg_info_c2s));
                     response_s2c *flag=reg(s);
-                    Rio_writen(fd_log,flag, sizeof(response_s2c));
+                    rio_writen(fd_log,flag, sizeof(response_s2c));
                     free(s);
                     free(flag);
                     close(fd_log);
@@ -102,13 +102,13 @@ int main(int argc, char **argv)
             fd_log=check_clients(&pool_log);
             rio_t newclient;
             rio_readinitb(&newclient,fd_log);
-            Rio_readlineb(&newclient,&op,sizeof(OP_TYPE));
+            rio_readlineb(&newclient,&op,sizeof(OP_TYPE));
             switch (op)
             {
                 case ADD_FRIEND: //添加好友
                 {
                     oper_friend_info * s=(oper_friend_info*)malloc(sizeof(oper_friend_info));
-                    Rio_readlineb(&newclient,s,sizeof(s));
+                    rio_readlineb(&newclient,s,sizeof(s));
                     s->type=ADD_FRIEND;
                     s->id_app=check_id_log(fd_log);
                     if(operate_friend(s))
@@ -125,7 +125,7 @@ int main(int argc, char **argv)
                 case DELETE_FRIEND://删除好友
                 {
                     oper_friend_info * s=(oper_friend_info*)malloc(sizeof(oper_friend_info));
-                    Rio_readlineb(&newclient,s,sizeof(s));
+                    rio_readlineb(&newclient,s,sizeof(s));
                     s->type=DELETE_FRIEND;
                     s->id_app=check_id_log(fd_log);
                     if(operate_friend(s))
@@ -142,7 +142,7 @@ int main(int argc, char **argv)
                 case ADD_GROUP://创建群组
                 {
                     oper_group_info * s=(oper_group_info*)malloc(sizeof(oper_group_info));
-                    Rio_readlineb(&newclient,s,sizeof(s));
+                    rio_readlineb(&newclient,s,sizeof(s));
                     s->type=ADD_GROUP;
                     s->owner_id=check_id_log(fd_log);
                     if(operate_group(s))
@@ -160,7 +160,7 @@ int main(int argc, char **argv)
                 case JOIN_GROUP://加入群组
                 {
                     oper_group_info * s=(oper_group_info*)malloc(sizeof(oper_group_info));
-                    Rio_readlineb(&newclient,s,sizeof(s));
+                    rio_readlineb(&newclient,s,sizeof(s));
                     s->type=JOIN_GROUP;
                     s->client_id=check_id_log(fd_log);
                     if(operate_group(s))
@@ -177,7 +177,7 @@ int main(int argc, char **argv)
                 case QUIT_GROUP://退出群组
                 {
                     oper_group_info * s=(oper_group_info*)malloc(sizeof(oper_group_info));
-                    Rio_readlineb(&newclient,s,sizeof(s));
+                    rio_readlineb(&newclient,s,sizeof(s));
                     s->type=QUIT_GROUP;
                     s->client_id=check_id_log(fd_log);
                     if(operate_group(s))
@@ -246,7 +246,7 @@ int check_clients(pool *p)
         if((connfd > 0) && (FD_ISSET(connfd, &p->ready_set)))
         {
             p->nready--;
-            if((n=Rio_readlineb(&rio, buf, 1024)) != 0)
+            if((n=rio_readlineb(&rio, buf, 1024)) != 0)
             {
                 return connfd;
             }

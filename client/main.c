@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "../common/include/include.h"
+#include "../common/include/rio.h"
 
 extern int login (int argc, char *argv[]);
 

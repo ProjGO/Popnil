@@ -4,6 +4,8 @@
 
 #include "friend_group_server.h"
 #include "database.h"
+#include "../common/include/define.h"
+
 int operate_friend(oper_friend_info * s)
 {
     //将两者id存入数据库

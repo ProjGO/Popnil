@@ -6,7 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../common/include/include.h"
-#define DEFAULT_IP "127.0.0.1"
+#include "../common/include/define.h"
+
 extern GtkWidget * sign_success(char * userid);
 GtkWidget *nickname_entry, *password_entry;
 int sign_clicked (GtkWidget *window, gpointer data)

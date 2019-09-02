@@ -13,6 +13,7 @@
 #define MAX_PWD_LEN 512
 #define MAX_MSG_LEN 512
 #define DEFAULT_PORT 8088
+#define DEFAULT_IP "127.0.0.1"
 
 typedef enum OP_TYPE {LOGIN, REGISTER,ADD_FRIEND,DELETE_FRIEND,ADD_GROUP,DELETE_GROUP,JOIN_GROUP,QUIT_GROUP} OP_TYPE;
 
@@ -95,4 +96,12 @@ typedef struct pool{
     int clientfd[FD_SETSIZE];
     rio_t clientrio[FD_SETSIZE];
 } pool;
+
+enum Permission
+{
+    owner,
+    admin,
+    none
+};
+
 #endif //LINPOP_DEFINE_H

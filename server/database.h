@@ -12,13 +12,13 @@
 #include <stdio.h>
 #include <mysql/mysql.h>
 #include <stdbool.h>
-
-enum Permission
-{
-  owner,
-  admin,
-  none
-};
+#include "../common/include/define.h"
+//enum Permission
+//{
+//  owner,
+//  admin,
+//  none
+//};
 
 MYSQL* connect_db (void);
 bool isuser (const int id, const char passwd[]);
