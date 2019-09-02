@@ -8,7 +8,7 @@ add_executable(server server/main.c common/srcs/socket_utils.c common/srcs/rio.c
         server/friend_group_server.c server/friend_group_server.h server/database.c common/include/database.h server/)
 
 
-add_executable(client client/chat.c client/list.c client/login.c client/main.c client/sign.c client/sign_success.c common/srcs/rio.c common/srcs/socket_utils.c client/add_friend.c)
+add_executable(client client/list.c client/login.c client/main.c client/sign.c client/sign_success.c common/srcs/rio.c common/srcs/socket_utils.c client/add_friend.c client/chat_new.c client/emoji.c client/tools.c client/tools.h client/set.c client/select_portrait.c)
 
 add_executable(client_chat common/srcs/socket_utils.c common/srcs/rio.c)
 
@@ -21,6 +21,7 @@ target_link_libraries(server pthread)
 
 FIND_PACKAGE(PkgConfig REQUIRED)
 PKG_CHECK_MODULES(GTK3 REQUIRED gtk+-3.0)
+PKG_CHECK_MODULES(GTK3 REQUIRED gtk+-2.0)
 
 INCLUDE_DIRECTORIES(${GTK3_INCLUDE_DIRS})
 LINK_DIRECTORIES(${GTK3_LIBRARY_DIRS})

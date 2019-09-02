@@ -3,6 +3,7 @@
 //
 
 #include <gtk/gtk.h>
+//#include <gtk-3.0>
 #include <gdk/gdkkeysyms.h>   //键盘头文件，GDK_Up在这声明
 #include "../common/include/include.h"
 #include "../common/include/define.h"
@@ -53,7 +54,6 @@ GtkWidget *add_friends()
     GtkWidget *frame;
     GtkWidget *button_search;
 
-
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_position(GTK_WINDOW(window),GTK_WIN_POS_CENTER);
     gtk_window_set_default_size(GTK_WINDOW(window),400,400);
@@ -66,7 +66,7 @@ GtkWidget *add_friends()
     gtk_table_set_col_spacings(GTK_TABLE(table),1);
     gtk_container_add(GTK_CONTAINER(window),table);
 
-    search_entry = gtk_search_entry_new();
+//    search_entry = gtk_search_entry_new();
     gtk_table_attach_defaults(GTK_TABLE(table),search_entry, 2, 16, 2, 4);
 //    search_friends();
     button_search = create_button("../client/images/search.png", NULL);

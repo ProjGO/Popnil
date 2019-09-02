@@ -1,6 +1,10 @@
 #include <gtk/gtk.h>
 
+
+//extern local_user_info;
 extern GtkWidget *add_friends();
+extern GtkWidget *chat();
+extern GtkWidget *setting();
 /**添加一个好友列表或其群组列表
  * page 好友界面&群组界面
  * str 列表的名字
@@ -36,7 +40,7 @@ void add_friend_group(GtkWidget* vbox, const char *str, const char *image_path)
     //设置button背景透
     gtk_button_set_relief(button, GTK_RELIEF_NONE);
     //点击信号
-    g_signal_connect(G_OBJECT(button), "clicked", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(G_OBJECT(button), "clicked", G_CALLBACK(chat), NULL);
     gtk_box_pack_start(GTK_BOX(vbox), button, TRUE, TRUE, 0);
     gtk_container_add(GTK_CONTAINER(button), hbox);
     gtk_box_pack_start(GTK_BOX(hbox), image, TRUE, TRUE, 0);
@@ -104,12 +108,19 @@ void list()
     image_usericon = gtk_image_new_from_file("../client/images/friend_portrait.png");
     gtk_table_attach_defaults(GTK_TABLE(table), image_usericon, 1, 5, 1, 5);
 
-    label_username = gtk_label_new("XDX");
+    label_username = gtk_label_new("XDX");  ///////change to -> local_user_info.username;
     gtk_table_attach_defaults(GTK_TABLE(table),label_username, 5, 13, 1, 5);
 
-    search_entry = gtk_search_entry_new();
-    gtk_table_attach_defaults(GTK_TABLE(table),search_entry, 0, 16, 6, 8);
+    button_setting = create_button("../client/images/set.png", NULL);
+    gtk_table_attach_defaults(GTK_TABLE(table),button_setting, 11, 16, 0, 4);
+    g_signal_connect(GTK_BUTTON(button_setting),"clicked", G_CALLBACK(setting), NULL);
 
+    GdkPixbuf * pixbuf= gdk_pixbuf_new_from_file("../client/images/search.png", FALSE);
+
+    search_entry = gtk_entry_new();
+    gtk_table_attach_defaults(GTK_TABLE(table),search_entry, 0, 16, 6, 8);
+    gtk_entry_set_has_frame(search_entry, FALSE);
+    gtk_entry_set_icon_from_pixbuf(search_entry, GTK_ENTRY_ICON_PRIMARY, pixbuf);
     gtk_entry_set_text(search_entry, "Search...");
 
 
@@ -138,7 +149,7 @@ void list()
     button_add_friends = create_button("../client/images/add_friends.png", NULL);
     //把事件盒放到横向的盒子里
     gtk_table_attach_defaults(GTK_TABLE(table), button_add_friends, 0, 16, 37, 40);
-    g_signal_connect(button_add_friends, "clicked", G_CALLBACK(add_friends), NULL);
+    //g_signal_connect(button_add_friends, "clicked", G_CALLBACK(add_friends), NULL);
 
     GtkWidget* my_friend_vbox =add_list(page_friend_vbox, "我的好友");
     add_friend_group(my_friend_vbox, "lalalala", "../client/images/emoji.png");
