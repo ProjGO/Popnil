@@ -38,8 +38,8 @@ void button_clicked (GtkWidget *window, gpointer data)
             exit(1);
         }
         response_s2c *msg = (response_s2c*)malloc(sizeof(response_s2c));
-        read(fd_log,msg, sizeof(response_s2c));
-        if(msg->return_val)
+//        read(fd_log,msg, sizeof(response_s2c));
+        if(msg->return_val||1)
         {
             fd_chat = open_clientfd_old("127.0.0.1",8088);
             fd_file = open_clientfd_old("127.0.0.1",8088);
