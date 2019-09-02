@@ -36,11 +36,13 @@ void *thread_chat(void *vargp)
                 printf("received msg_type %d from user %d\n", msg_type, get_id_by_fd(connfd));
                 switch (msg_type) {
                     case TEXT: { // 如果是文字信息
-                        if (recv_text_message(connfd, buf, rio) == 0) // 如果成功将消息包接收到buf指向的内存中
+                        if (rio_readnb(rio, buf, sizeof(text_pack_t))>=0) // 如果成功将消息包接收到buf指向的内存中
                         {
                             text_pack_t *text_pack_c2s = (text_pack_t *) buf; // 类型转换
-                            general_array target_ids_array =; // -----------------------------------数据库
+                            general_array target_ids_array;
+                            target_ids_array.num  = 1;
                             int *target_ids = (int *) target_ids_array.data;
+                            target_ids[0] = text_pack_c2s->id;
                             for (int j = 0; j < target_ids_array.num; j++) {
                                 target_fd = get_fd_by_id(target_ids[j]); // 获取目标fd
                                 text_pack_s2c.id = get_id_by_fd(connfd); // 获取发送者id并填写消息包字段

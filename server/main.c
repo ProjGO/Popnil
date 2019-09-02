@@ -18,6 +18,9 @@ void init_pool(int listenfd, pool *p);
 void add_client(int connfd, pool *p);
 int check_clients(pool *p);
 
+int check_clients(pool *p);
+int check_id_log(int fd);
+
 int byte_cnt = 0;
 
 int main(int argc, char **argv)
@@ -39,6 +42,8 @@ int main(int argc, char **argv)
     port=DEFAULT_PORT;
     listenfd = open_listenfd_old(port);
     init_pool(listenfd, &pool_log);
+    init_pool(-1, &pool_chat);
+    init_pool(-1, &pool_file);
     while(1)
     {
         pool_log.ready_set = pool_log.read_set;
@@ -206,7 +211,8 @@ void init_pool(int listenfd, pool *p)
     //开始时只有listenfd是select要检查的fd(也就是read_set)
     p->maxfd = listenfd;
     FD_ZERO(&p->read_set);
-    FD_SET(listenfd, &p->read_set);
+    if(listenfd >= 0)
+        FD_SET(listenfd, &p->read_set);
 }
 
 void add_client(int connfd, pool *p)

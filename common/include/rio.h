@@ -5,6 +5,8 @@
 #ifndef LINPOP_RIO_H
 #define LINPOP_RIO_H
 
+#include "include.h"
+
 #define RIO_BUFSIZE 8192
 typedef struct rio_t {
     int rio_fd;                /* descriptor for this internal buf */

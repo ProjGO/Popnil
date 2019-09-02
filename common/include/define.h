@@ -12,9 +12,11 @@
 #define MAX_NAME_LEN 32
 #define MAX_PWD_LEN 512
 #define MAX_MSG_LEN 512
+#define MAX_PIC_SIZE (1024*1024*3)
 #define DEFAULT_PORT 8088
 #define DEFAULT_IP "127.0.0.1"
 
+/*-----------------------------------登陆注册等相关------------------------------------*/
 typedef enum OP_TYPE {LOGIN, REGISTER,ADD_FRIEND,DELETE_FRIEND,ADD_GROUP,DELETE_GROUP,JOIN_GROUP,QUIT_GROUP} OP_TYPE;
 
 typedef struct login_info_c2s
@@ -64,29 +66,23 @@ typedef struct response_s2c
 } response_s2c;
 
 
-
+/*-----------------------------------聊天相关------------------------------------*/
 typedef enum MSG_TYPE {TEXT, PIC} MSG_TYPE;
 
-typedef struct text_pack_t_c2s
+typedef struct text_pack_t
 {
-    int target_id;
+    int id;
     char time;
     char text[MAX_MSG_LEN];
 } text_pack_t;
 
-typedef struct text_pack_t_s2c
-{
-    int source_id;
-
-    char text[MAX_MSG_LEN];
-} text_pack_t_s2c;
-
 typedef struct file_request_s2c
 {
     int source_id;
-
 } file_requese_s2c;
 
+
+/*-----------------------------------其它------------------------------------*/
 typedef struct pool{
     int maxfd;
     fd_set read_set;
@@ -96,6 +92,13 @@ typedef struct pool{
     int clientfd[FD_SETSIZE];
     rio_t clientrio[FD_SETSIZE];
 } pool;
+
+typedef struct general_array
+{
+    int num;
+    int size;
+    void *data;
+} general_array;
 
 enum Permission
 {
