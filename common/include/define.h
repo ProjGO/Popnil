@@ -112,11 +112,11 @@ typedef struct general_array
     void *data;
 } general_array;
 
-enum Permission
+typedef enum Permission
 {
     owner,
     admin,
     none
-};
+} Permission;
 
 #endif //LINPOP_DEFINE_H

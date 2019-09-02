@@ -4,11 +4,13 @@ project(Linpop C)
 set(CMAKE_C_STANDARD 99)
 
 add_executable(server server/main.c common/srcs/socket_utils.c common/srcs/rio.c server/login_reg_server.h server/login_reg_server.c
-        server/friend_group_server.c server/friend_group_server.h server/database.c server/database.h server/thread_chat.c)
+
+        server/friend_group_server.c server/friend_group_server.h server/database.c common/include/database.h server/)
+
 
 add_executable(client client/chat.c client/list.c client/login.c client/main.c client/sign.c client/sign_success.c common/srcs/rio.c common/srcs/socket_utils.c client/add_friend.c)
 
-#add_executable(client_chat test/client_chat.c common/srcs/socket_utils.c common/srcs/rio.c)
+add_executable(client_chat common/srcs/socket_utils.c common/srcs/rio.c)
 
 
 
