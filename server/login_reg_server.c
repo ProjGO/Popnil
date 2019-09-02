@@ -23,9 +23,10 @@ response_s2c* check_login(login_info* temp)
 response_s2c* reg(reg_info_c2s* temp)
 {
     response_s2c * s=(response_s2c*)malloc(sizeof(s));
-    if(adduser(temp->name,temp->pwd)>=0)
+    int id=adduser(temp->name,temp->pwd);
+    if(id>0)
     {
-        s->return_val=1;
+        s->return_val=id;
     }
     else
     {

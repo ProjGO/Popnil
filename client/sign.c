@@ -3,10 +3,11 @@
 //
 #include <gtk/gtk.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "../common/include/include.h"
 #define DEFAULT_IP "127.0.0.1"
-extern GtkWidget * sign_success();
+extern GtkWidget * sign_success(char * userid);
 GtkWidget *nickname_entry, *password_entry;
 int sign_clicked (GtkWidget *window, gpointer data)
 {
@@ -47,8 +48,13 @@ int sign_clicked (GtkWidget *window, gpointer data)
             printf ("Error in send\n");
             exit(1);
         }
+        response_s2c *msg=(response_s2c*)malloc(sizeof(response_s2c));
+        read(socketfd,msg,sizeof(response_s2c));
         close(socketfd);
-        sign_success();
+        char str[10];
+        sprintf(str, "%d", msg->return_val);
+        sign_success(str);
+        free(msg);
     }
     else
     {
