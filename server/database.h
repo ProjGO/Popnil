@@ -20,6 +20,12 @@ enum Permission
   none
 };
 
+struct idarray
+{
+  int *p;
+  int len;
+};
+
 MYSQL* connect_db (void);
 bool isuser (const int id, const char passwd[]);
 int adduser (const char nick[], const char passwd[]);
@@ -28,8 +34,7 @@ bool addfriendship (const int idA, const int idB);
 bool deletefriendship (const int idA, const int idB);
 bool addmembership (const int gid, const int uid);
 bool deletemembership (const int gid, const int uid);
-bool setpermission (const int gid, const int uid, enum Permission permission);
-bool setpermission (const int gid, const int uid, enum Permission permission);
+bool setpermission (const int gid, const int uid, const enum Permission permission);
 bool addusermessage (const time_t t, const int masterid, const int goalid, const char text[]);
 bool addgroupmessage (const time_t t, const int masterid, const int goalid, const char text[]);
 
