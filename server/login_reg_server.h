@@ -3,6 +3,8 @@
 //
 
 #include "../common/include/include.h"
+#include "../common/include/define.h"
+
 #ifndef LINPOP_LOGIN_ON_SERVER_H
 #define LINPOP_LOGIN_ON_SERVER_H
 

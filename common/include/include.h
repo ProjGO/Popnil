@@ -15,13 +15,15 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-
-#include "../include/rio.h"
-#include "../include/socket_utils.h"
-#include "../include/define.h"
+#include <errno.h>
+#include <sys/types.h>
+//#include "../server/database.h"
+//#include "../include/rio.h"
+//#include "../include/socket_utils.h"
+//#include "../include/define.h"
 
 #endif //LINPOP_INCLUDE_H
 
-extern int FD_log[100];
-extern int FD_chat[100];
-extern int FD_file[100];
+//extern int FD_log[100];
+//extern int FD_chat[100];
+//extern int FD_file[100];

@@ -492,7 +492,7 @@ bool addgroupmessage (const time_t t, const int masterid, const int goalid, cons
 }
 
 
-int main ()
+/*int main ()
 {
   int gid;
   printf("%ld\n", time (NULL));
@@ -517,7 +517,7 @@ int main ()
     }
   free (res.data);
   return 0;
-}
+}*/
 
 //int main ()
 //{

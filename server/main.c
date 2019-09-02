@@ -18,6 +18,9 @@ void init_pool(int listenfd, pool *p);
 void add_client(int connfd, pool *p);
 int check_clients(pool *p);
 
+int check_clients(pool *p);
+int check_id_log(int fd);
+
 int byte_cnt = 0;
 
 int main(int argc, char **argv)
@@ -39,6 +42,8 @@ int main(int argc, char **argv)
     port=DEFAULT_PORT;
     listenfd = open_listenfd_old(port);
     init_pool(listenfd, &pool_log);
+    init_pool(-1, &pool_chat);
+    init_pool(-1, &pool_file);
     while(1)
     {
         pool_log.ready_set = pool_log.read_set;
@@ -51,18 +56,18 @@ int main(int argc, char **argv)
             fd_log = Accept(listenfd, (struct sockaddr *)&clientaddr, &clientlen);
             rio_t newclient;
             rio_readinitb(&newclient,fd_log);
-            Rio_readnb(&newclient,&op,sizeof(OP_TYPE));
+            rio_readnb(&newclient,&op,sizeof(OP_TYPE));
 //            read(fd_log,&op, sizeof(OP_TYPE));
             switch(op)
             {
                 case LOGIN: //登录功能
                 {
                     login_info *s=(login_info*)malloc(sizeof(login_info));
-                    Rio_readlineb(&newclient,s,sizeof(s));
+                    rio_readlineb(&newclient,s,sizeof(login_info));
                     response_s2c *flag=check_login(s);//标识登录是否成功
                     if(flag->return_val)
                     {
-                        Rio_writen(fd_log,flag,sizeof(response_s2c));
+                        rio_writen(fd_log,flag,sizeof(response_s2c));
                         FD_log[s->id]=fd_log;
                         //新建两个套接字用于聊天与发文件
                         fd_chat = Accept(listenfd, (struct sockaddr *)&clientaddr, &clientlen);
@@ -75,7 +80,7 @@ int main(int argc, char **argv)
                     }
                     else
                     {
-                        Rio_writen(fd_log,flag,sizeof(response_s2c));
+                        rio_writen(fd_log,flag,sizeof(response_s2c));
                         close(fd_log);
                     }
                     free(s);
@@ -85,10 +90,10 @@ int main(int argc, char **argv)
                 case REGISTER: //注册功能
                 {
                     reg_info_c2s *s=(reg_info_c2s*)malloc(sizeof(reg_info_c2s));
-                    Rio_readnb(&newclient, s, sizeof(reg_info_c2s));
+                    rio_readnb(&newclient, s, sizeof(reg_info_c2s));
 //                    read(fd_log,s,sizeof(reg_info_c2s));
                     response_s2c *flag=reg(s);
-                    Rio_writen(fd_log,flag, sizeof(response_s2c));
+                    rio_writen(fd_log,flag, sizeof(response_s2c));
                     free(s);
                     free(flag);
                     close(fd_log);
@@ -102,15 +107,94 @@ int main(int argc, char **argv)
             fd_log=check_clients(&pool_log);
             rio_t newclient;
             rio_readinitb(&newclient,fd_log);
-            Rio_readlineb(&newclient,&op,sizeof(OP_TYPE));
+            rio_readlineb(&newclient,&op,sizeof(OP_TYPE));
             switch (op)
             {
                 case ADD_FRIEND: //添加好友
                 {
-                    new_friend_info * s=(new_friend_info*)malloc(sizeof(new_friend_info));
-                    Rio_readlineb(&newclient,s,sizeof(s));
+                    oper_friend_info * s=(oper_friend_info*)malloc(sizeof(oper_friend_info));
+                    rio_readlineb(&newclient,s,sizeof(s));
+                    s->type=ADD_FRIEND;
                     s->id_app=check_id_log(fd_log);
-                    operate_friend(s);
+                    if(operate_friend(s))
+                    {
+                        printf("id%d与id%d添加好友成功\n",s->id_app,s->id_re);
+                    }
+                    else
+                    {
+                        printf("添加好友失败\n");
+                    }
+                    free(s);
+                    break;
+                }
+                case DELETE_FRIEND://删除好友
+                {
+                    oper_friend_info * s=(oper_friend_info*)malloc(sizeof(oper_friend_info));
+                    rio_readlineb(&newclient,s,sizeof(s));
+                    s->type=DELETE_FRIEND;
+                    s->id_app=check_id_log(fd_log);
+                    if(operate_friend(s))
+                    {
+                        printf("id%d与id%d删除好友成功\n",s->id_app,s->id_re);
+                    }
+                    else
+                    {
+                        printf("删除好友失败\n");
+                    }
+                    free(s);
+                    break;
+                }
+                case ADD_GROUP://创建群组
+                {
+                    oper_group_info * s=(oper_group_info*)malloc(sizeof(oper_group_info));
+                    rio_readlineb(&newclient,s,sizeof(s));
+                    s->type=ADD_GROUP;
+                    s->owner_id=check_id_log(fd_log);
+                    if(operate_group(s))
+                    {
+                        printf("id%d创建群%d\n",s->owner_id,s->group_id);
+                    }
+                    else
+                    {
+                        printf("创建群失败\n");
+                    }
+                    free(s);
+                    break;
+                }
+//                case DELETE_GROUP
+                case JOIN_GROUP://加入群组
+                {
+                    oper_group_info * s=(oper_group_info*)malloc(sizeof(oper_group_info));
+                    rio_readlineb(&newclient,s,sizeof(s));
+                    s->type=JOIN_GROUP;
+                    s->client_id=check_id_log(fd_log);
+                    if(operate_group(s))
+                    {
+                        printf("id%d加入群%d\n",s->client_id,s->group_id);
+                    }
+                    else
+                    {
+                        printf("加入群失败\n");
+                    }
+                    free(s);
+                    break;
+                }
+                case QUIT_GROUP://退出群组
+                {
+                    oper_group_info * s=(oper_group_info*)malloc(sizeof(oper_group_info));
+                    rio_readlineb(&newclient,s,sizeof(s));
+                    s->type=QUIT_GROUP;
+                    s->client_id=check_id_log(fd_log);
+                    if(operate_group(s))
+                    {
+                        printf("id%d退出群%d\n",s->client_id,s->group_id);
+                    }
+                    else
+                    {
+                        printf("退出群失败\n");
+                    }
+                    free(s);
+                    break;
                 }
             }
         }
@@ -127,7 +211,8 @@ void init_pool(int listenfd, pool *p)
     //开始时只有listenfd是select要检查的fd(也就是read_set)
     p->maxfd = listenfd;
     FD_ZERO(&p->read_set);
-    FD_SET(listenfd, &p->read_set);
+    if(listenfd >= 0)
+        FD_SET(listenfd, &p->read_set);
 }
 
 void add_client(int connfd, pool *p)
@@ -167,7 +252,7 @@ int check_clients(pool *p)
         if((connfd > 0) && (FD_ISSET(connfd, &p->ready_set)))
         {
             p->nready--;
-            if((n=Rio_readlineb(&rio, buf, 1024)) != 0)
+            if((n=rio_readlineb(&rio, buf, 1024)) != 0)
             {
                 return connfd;
             }

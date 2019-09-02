@@ -12,10 +12,12 @@
 #define MAX_NAME_LEN 32
 #define MAX_PWD_LEN 512
 #define MAX_MSG_LEN 512
-#define MAX_PIC_SIZE (1024*1024*3) // 1Mb
+#define MAX_PIC_SIZE (1024*1024*3)
 #define DEFAULT_PORT 8088
+#define DEFAULT_IP "127.0.0.1"
 
-typedef enum OP_TYPE {LOGIN, REGISTER, ADD_FRIEND, ADD_GROUP, QUIT_GROUP, UPDATE} OP_TYPE;
+/*-----------------------------------登陆注册等相关------------------------------------*/
+typedef enum OP_TYPE {LOGIN, REGISTER,ADD_FRIEND,DELETE_FRIEND,ADD_GROUP,DELETE_GROUP,JOIN_GROUP,QUIT_GROUP} OP_TYPE;
 
 typedef struct login_info_c2s
 {
@@ -29,29 +31,33 @@ typedef struct reg_info_c2s
     char pwd[MAX_PWD_LEN];
 } reg_info_c2s;
 
-typedef struct new_friend_info
+typedef struct oper_friend_info
 {
-    int type;//定义信息类型，1：申请加好友c2s 2:申请加好友s2c 3:回应加好友c2s 4:回应加好友s2c;
+    int type;//定义信息类型 与optype一致
     int id_app;//申请方id
     int id_re;//被申请方id
     int response;//回应：1：同意 2：拒绝
     char msg[100];//提示信息
-} new_friend_info;
+} oper_friend_info;
 
-typedef struct new_group_c2s
+typedef struct oper_group_info
 {
+    int type;//定义信息类型 与optype一致
     char group_name[MAX_NAME_LEN];
-} new_group_s2c;
-
-typedef struct add_group_c2s
-{
     int group_id;
-} add_group_c2s;
+    int owner_id;//创建者id
+    int client_id;//进行操作者id
+} oper_group_info;
 
-typedef struct quit_group_c2s
-{
-    int group_id;
-} quit_group_c2s;
+//typedef struct add_group_c2s
+//{
+//    int group_id;
+//} add_group_c2s;
+//
+//typedef struct quit_group_c2s
+//{
+//    int group_id;
+//} quit_group_c2s;
 
 typedef struct response_s2c
 {
@@ -59,43 +65,24 @@ typedef struct response_s2c
     char err_msg[MAX_MSG_LEN];
 } response_s2c;
 
-typedef struct friend_info_s2c // 同步过程中服务器传给客户端的每个用户的信息
-{
-    int id;
-    char name[MAX_NAME_LEN]; // 昵称
-    char group_name[MAX_NAME_LEN]; // 所属分组名称
-    int pic;  // 头像编号
-} friend_info_s2c;
 
-typedef struct friend_info_array_c // 客户端收到的好友信息会保存在这个里面
-{
-    int friend_num; // 好友数量
-    // 使用后记得free
-    struct friend_info_s2c *data; // 指向实际的数据,大小为friend_num*sizeof(friend_info_s2c)
-} friend_info_array_c;
-
-
-
+/*-----------------------------------聊天相关------------------------------------*/
 typedef enum MSG_TYPE {TEXT, PIC} MSG_TYPE;
 
-typedef struct text_pack_t_c2s
+typedef struct text_pack_t
 {
-    int target_id;
+    int id;
     char time;
     char text[MAX_MSG_LEN];
-} text_pack_t_c2s;
-
-typedef struct text_pack_t_s2c
-{
-    int source_id;
-    char text[MAX_MSG_LEN];
-} text_pack_t_s2c;
+} text_pack_t;
 
 typedef struct file_request_s2c
 {
     int source_id;
 } file_requese_s2c;
 
+
+/*-----------------------------------其它------------------------------------*/
 typedef struct pool{
     int maxfd;
     fd_set read_set;
@@ -105,10 +92,19 @@ typedef struct pool{
     int clientfd[FD_SETSIZE];
     rio_t clientrio[FD_SETSIZE];
 } pool;
-#endif //LINPOP_DEFINE_H
 
-typedef struct general_array{
-    int num; // 数量
-    int size; // 每项的大小
-    void *data; // 实际数据
+typedef struct general_array
+{
+    int num;
+    int size;
+    void *data;
 } general_array;
+
+enum Permission
+{
+    owner,
+    admin,
+    none
+};
+
+#endif //LINPOP_DEFINE_H

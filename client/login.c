@@ -4,30 +4,57 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include <string.h>
+#include "../common/include/socket_utils.h"
 #include "../common/include/include.h"
+#include "../common/include/define.h"
 
 extern GtkWidget * sign();
 extern void list();
-const char * password = "secret";
-
+const char password[MAX_PWD_LEN] = "secret";
+extern int fd_log,fd_chat,fd_file;
+GtkWidget *username_entry, *password_entry;
 void button_clicked (GtkWidget *window, gpointer data)
 {
-    const char *password_text = ((reg_info_c2s *) data)->pwd;
-
-    if (strcmp(password_text, password) == 0)
-        printf("Access granted!\n");
-    else
-        printf("Access denied!\n");
-
-    list();
-
+    login_info *info = (login_info *) malloc(sizeof(login_info));
+    memset(&info->id,0, sizeof(info->id));
+    memset(info->pwd,0,sizeof(info->pwd));
+    info->id=atoi(gtk_entry_get_text(GTK_ENTRY((GtkWidget *) username_entry)));
+    strcpy(info->pwd,gtk_entry_get_text(GTK_ENTRY((GtkWidget *) password_entry)));
+    fd_log = open_clientfd_old("127.0.0.1",8088);
+    if(fd_log>0)
+    {
+        printf("connect scs.\n");
+        //向数据库中信息核查
+        //建立三个extern线程
+        int flag=0;
+        if(write(fd_log,&flag,sizeof(int))==-1)
+        {
+            printf("ord send err.\n");
+            exit(1);
+        }
+        if(write(fd_log,info, sizeof(login_info))==-1)
+        {
+            printf("msg send err.\n");
+            exit(1);
+        }
+        response_s2c *msg = (response_s2c*)malloc(sizeof(response_s2c));
+        read(fd_log,msg, sizeof(response_s2c));
+        if(msg->return_val)
+        {
+            fd_chat = open_clientfd_old("127.0.0.1",8088);
+            fd_file = open_clientfd_old("127.0.0.1",8088);
+            list();
+        }
+        else
+            printf("%s\n",msg->err_msg);
+    }
 }
 
 int login (int argc, char *argv[])
 {
     GtkWidget *window;
     GtkWidget *sign_button, *retrieve_button;
-    GtkWidget *username_entry, *password_entry;
+//
     GtkWidget *ok_button;
     GtkWidget *hbox0, *hbox1, *hbox2, *hbox3, *hbox4;
     GtkWidget *hbox, *vbox, *vbox1, *vbox2;
