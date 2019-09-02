@@ -3,7 +3,7 @@
 //
 
 #include "friend_group_server.h"
-#include "database.h"
+#include "../common/include/database.h"
 #include "../common/include/define.h"
 
 int operate_friend(oper_friend_info * s)
@@ -11,6 +11,11 @@ int operate_friend(oper_friend_info * s)
     //将两者id存入数据库
     switch(s->type)
     {
+        case SEARCH_FRIEND:
+        {
+            client_info* c=(client_info*)malloc(sizeof(client_info));
+
+        }
         case ADD_FRIEND:return(addfriendship(s->id_app,s->id_re));
         case DELETE_FRIEND:return(deletefriendship(s->id_app,s->id_re));
     }

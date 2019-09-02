@@ -7,6 +7,7 @@ create table `userinfo`
 	primary key (`id`),
 	`passwd` varchar(32),
 	`nick` varchar(32),
+	`avatar` int,
 	`bio` varchar(1024),
 	`birthday` date,
 	`ip` int,
@@ -21,12 +22,12 @@ create table `groupinfo`
 );
 create table `friendship`
 (
-	`idord` int,
-	foreign key (`idord`) references `userinfo`(`id`),
+	`idold` int,
+	foreign key (`idold`) references `userinfo`(`id`),
 	`idnew` int,
 	foreign key (`idnew`) references `userinfo`(`id`),
-	check (`idord` < `idnew`),
-	primary key (`idord`, `idnew`),
+	check (`idold` < `idnew`),
+	primary key (`idold`, `idnew`),
 	`anniversary` date
 );
 create table `membership`

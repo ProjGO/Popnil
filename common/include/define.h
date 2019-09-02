@@ -16,8 +16,18 @@
 #define DEFAULT_PORT 8088
 #define DEFAULT_IP "127.0.0.1"
 
-/*-----------------------------------登陆注册等相关------------------------------------*/
-typedef enum OP_TYPE {LOGIN, REGISTER,ADD_FRIEND,DELETE_FRIEND,ADD_GROUP,DELETE_GROUP,JOIN_GROUP,QUIT_GROUP} OP_TYPE;
+/*-----------------------------------用户登陆注册等相关------------------------------------*/
+typedef enum OP_TYPE {LOGIN, REGISTER,SEARCH_FRIEND,ADD_FRIEND,DELETE_FRIEND,ADD_GROUP,DELETE_GROUP,JOIN_GROUP,QUIT_GROUP} OP_TYPE;
+
+typedef struct client_info
+{
+    int id;
+    char passwd[32];
+    char nickname[32];
+    char bio[1024];
+    char birthday[20];
+    int avatar;
+}client_info;
 
 typedef struct login_info_c2s
 {
@@ -35,7 +45,9 @@ typedef struct oper_friend_info
 {
     int type;//定义信息类型 与optype一致
     int id_app;//申请方id
+    int fd_app;//申请方fd
     int id_re;//被申请方id
+    int fd_re;//被申请方fd
     int response;//回应：1：同意 2：拒绝
     char msg[100];//提示信息
 } oper_friend_info;
@@ -100,11 +112,12 @@ typedef struct general_array
     void *data;
 } general_array;
 
-enum Permission
+typedef enum Permission
 {
     owner,
     admin,
     none
-};
+} Permission;
+
 
 #endif //LINPOP_DEFINE_H

@@ -6,6 +6,7 @@
 //#include <gtk-3.0>
 #include <gdk/gdkkeysyms.h>   //键盘头文件，GDK_Up在这声明
 #include "../common/include/include.h"
+#include "../common/include/define.h"
 GtkWidget *search_entry;
 char* default_image_path = "../client/images/friend_portrait.png";
 char* default_id = "1120173454";
@@ -14,8 +15,8 @@ extern GtkWidget *create_button(char *image_path, char *button_label);
 
 void search(GtkWidget *window, gpointer data)
 {
-//    new_friend_info *id_text=(new_friend_info*)malloc(sizeof(new_friend_info));
-//    id_text->id_re=atoi(gtk_entry_get_text(GTK_ENTRY((GtkWidget *) search_entry)));
+    oper_friend_info *id_text=(oper_friend_info*)malloc(sizeof(oper_friend_info));
+    id_text->id_re=atoi(gtk_entry_get_text(GTK_ENTRY((GtkWidget *) search_entry)));
 
 
 }

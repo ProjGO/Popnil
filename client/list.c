@@ -1,5 +1,7 @@
 #include <gtk/gtk.h>
 
+
+//extern local_user_info;
 extern GtkWidget *add_friends();
 extern GtkWidget *chat();
 extern GtkWidget *setting();
@@ -106,7 +108,7 @@ void list()
     image_usericon = gtk_image_new_from_file("../client/images/friend_portrait.png");
     gtk_table_attach_defaults(GTK_TABLE(table), image_usericon, 1, 5, 1, 5);
 
-    label_username = gtk_label_new("XDX");
+    label_username = gtk_label_new("XDX");  ///////change to -> local_user_info.username;
     gtk_table_attach_defaults(GTK_TABLE(table),label_username, 5, 13, 1, 5);
 
     button_setting = create_button("../client/images/set.png", NULL);
@@ -147,7 +149,7 @@ void list()
     button_add_friends = create_button("../client/images/add_friends.png", NULL);
     //把事件盒放到横向的盒子里
     gtk_table_attach_defaults(GTK_TABLE(table), button_add_friends, 0, 16, 37, 40);
-    g_signal_connect(button_add_friends, "clicked", G_CALLBACK(add_friends), NULL);
+    //g_signal_connect(button_add_friends, "clicked", G_CALLBACK(add_friends), NULL);
 
     GtkWidget* my_friend_vbox =add_list(page_friend_vbox, "我的好友");
     add_friend_group(my_friend_vbox, "lalalala", "../client/images/emoji.png");

@@ -3,7 +3,7 @@
 //
 
 #include "login_reg_server.h"
-#include "database.h"
+#include "../common/include/database.h"
 
 response_s2c* check_login(login_info* temp)
 {
