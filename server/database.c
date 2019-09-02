@@ -197,7 +197,6 @@ general_array listfriendship (const int id)
   MYSQL_ROW row;
   int nold, nnew;
   general_array friends;
-  //int *p;
   friends.size = sizeof (int);
   if ( (pconn= connect_db ()) != NULL )
     {
@@ -208,7 +207,7 @@ general_array listfriendship (const int id)
         {
           resold = mysql_store_result (pconn);
           nold = mysql_num_rows (resold);
-          sprintf (comm, "select `idold` from `friendship` where `idold` = %d;", id);
+          sprintf (comm, "select `idnew` from `friendship` where `idold` = %d;", id);
           puts (comm);
           if ( !mysql_query (pconn, comm) )
             {
@@ -216,21 +215,21 @@ general_array listfriendship (const int id)
               nnew = mysql_num_rows (resnew);
               friends.num = nold + nnew;
               friends.data = (int*)calloc (friends.num, friends.size);
-              //friends.data = p;
               for (int i = 0; i < nold; i++)
                 {
                   row = mysql_fetch_row (resold);
-                  //printf("%s\n", row[0]);
                   ((int*)friends.data)[i] = atoi (row[0]);
                 }
-              for (int i = nold; i < friends.size ; i++)
+              for (int i = nold; i < friends.num ; i++)
                 {
                   row = mysql_fetch_row (resnew);
-                  //printf("%s\n", row[0]);
                   ((int*)friends.data)[i] = atoi (row[0]);
                 }
+              puts ("new");
               mysql_free_result (resold);
+              puts ("resold");
               mysql_free_result (resnew);
+              puts ("resnew");
             }
           else
             {
@@ -492,7 +491,7 @@ bool addgroupmessage (const time_t t, const int masterid, const int goalid, cons
 }
 
 
-/*int main ()
+int main ()
 {
   int gid;
   printf("%ld\n", time (NULL));
@@ -511,13 +510,14 @@ bool addgroupmessage (const time_t t, const int masterid, const int goalid, cons
   addfriendship (1, 0);
   addusermessage (time (NULL), 1, 0, "I am lz.");
   general_array res = listfriendship (1);
-  for (int i = 0; i < res.size; i++)
+  puts ("Start.");
+  for (int i = 0; i < res.num; i++)
     {
       printf("%d\n", ((int*)res.data)[i]);
     }
   free (res.data);
   return 0;
-}*/
+}
 
 //int main ()
 //{

@@ -14,12 +14,6 @@
 #include <mysql/mysql.h>
 #include <stdbool.h>
 
-typedef enum Permission
-{
-  owner,
-  admin,
-  none
-} Permission;
 
 struct idarray
 {
