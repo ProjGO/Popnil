@@ -20,7 +20,7 @@ void button_clicked (GtkWidget *window, gpointer data)
     memset(info->pwd,0,sizeof(info->pwd));
     info->id=atoi(gtk_entry_get_text(GTK_ENTRY((GtkWidget *) username_entry)));
     strcpy(info->pwd,gtk_entry_get_text(GTK_ENTRY((GtkWidget *) password_entry)));
-    fd_log = open_clientfd_old("127.0.0.1",8088);
+    fd_log = open_clientfd_old(DEFAULT_IP,DEFAULT_PORT);
     if(fd_log>0)
     {
         printf("connect scs.\n");
@@ -41,8 +41,8 @@ void button_clicked (GtkWidget *window, gpointer data)
         read(fd_log,msg, sizeof(response_s2c));
         if(msg->return_val)
         {
-            fd_chat = open_clientfd_old("127.0.0.1",8088);
-            fd_file = open_clientfd_old("127.0.0.1",8088);
+            fd_chat = open_clientfd_old(DEFAULT_IP,DEFAULT_PORT);
+            fd_file = open_clientfd_old(DEFAULT_IP,DEFAULT_PORT);
             list();
         }
         else
