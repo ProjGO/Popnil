@@ -85,7 +85,7 @@ int main(int argc, char **argv)
                 case REGISTER: //注册功能
                 {
                     reg_info_c2s *s=(reg_info_c2s*)malloc(sizeof(reg_info_c2s));
-                    Rio_readlineb(&newclient,s,sizeof(reg_info_c2s));
+                    Rio_readnb(&newclient, s, sizeof(reg_info_c2s));
 //                    read(fd_log,s,sizeof(reg_info_c2s));
                     response_s2c *flag=reg(s);
                     Rio_writen(fd_log,flag, sizeof(response_s2c));
