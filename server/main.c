@@ -58,7 +58,7 @@ int main(int argc, char **argv)
                 case LOGIN: //登录功能
                 {
                     login_info *s=(login_info*)malloc(sizeof(login_info));
-                    Rio_readlineb(&newclient,s,sizeof(s));
+                    Rio_readlineb(&newclient,s,sizeof(login_info));
                     response_s2c *flag=check_login(s);//标识登录是否成功
                     if(flag->return_val)
                     {
