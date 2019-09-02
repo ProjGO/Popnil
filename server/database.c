@@ -524,7 +524,7 @@ bool addgroupmessage (const time_t t, const int masterid, const int goalid, cons
   return suc;
 }
 
-
+/*
 int main ()
 {
   for (int i = 0; i < 3; i++)
@@ -533,4 +533,4 @@ int main ()
       printf("%d\t%s\t%s\t%d\t%s\t%s\n", info.id, info.passwd, info.nickname, info.avatar, info.bio, info.birthday);
     }
 }
-
+*/

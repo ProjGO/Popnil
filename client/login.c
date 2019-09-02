@@ -8,9 +8,10 @@
 #include "../common/include/include.h"
 #include "../common/include/define.h"
 
+
 extern GtkWidget * sign();
 extern void list();
-const char password[MAX_PWD_LEN] = "secret";
+//const char password[MAX_PWD_LEN] = "secret";
 extern int fd_log,fd_chat,fd_file;
 GtkWidget *username_entry, *password_entry;
 void button_clicked (GtkWidget *window, gpointer data)
