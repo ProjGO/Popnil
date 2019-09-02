@@ -58,7 +58,7 @@ int main(int argc, char **argv)
                 case LOGIN: //登录功能
                 {
                     login_info *s=(login_info*)malloc(sizeof(login_info));
-                    Rio_readlineb(&newclient,s,sizeof(s));
+                    Rio_readlineb(&newclient,s,sizeof(login_info));
                     response_s2c *flag=check_login(s);//标识登录是否成功
                     if(flag->return_val)
                     {
@@ -85,7 +85,7 @@ int main(int argc, char **argv)
                 case REGISTER: //注册功能
                 {
                     reg_info_c2s *s=(reg_info_c2s*)malloc(sizeof(reg_info_c2s));
-                    Rio_readlineb(&newclient,s,sizeof(reg_info_c2s));
+                    Rio_readnb(&newclient, s, sizeof(reg_info_c2s));
 //                    read(fd_log,s,sizeof(reg_info_c2s));
                     response_s2c *flag=reg(s);
                     Rio_writen(fd_log,flag, sizeof(response_s2c));
