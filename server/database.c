@@ -42,7 +42,7 @@ bool isuser (const int id, const char passwd[])
   MYSQL_RES *res;
   bool ans = false;
 
-  if ( (pconn= connect_db ()) != NULL )
+  if ( (pconn = connect_db ()) != NULL )
     {
       char comm[1024] = "\0";
       sprintf (comm, "select * from `userinfo` where `id` = %d and `passwd` = '%s';", id, passwd);
@@ -69,7 +69,7 @@ int adduser (const char nick[], const char passwd[])
   MYSQL_RES *res;
   int id = -1;
 
-  if ( (pconn= connect_db ()) != NULL )
+  if ( (pconn = connect_db ()) != NULL )
     {
       char comm[1024] = "\0";
       sprintf (comm, "select * from `userinfo`;");
@@ -98,13 +98,47 @@ int adduser (const char nick[], const char passwd[])
   return id;
 }
 
+client_info getuser (const int id)
+{
+  MYSQL *pconn;
+  MYSQL_RES *res;
+  MYSQL_ROW row;
+  client_info ans = {id, "", "", "", "", 0};
+
+  if ( (pconn = connect_db ()) != NULL )
+    {
+      char comm[1024] = "\0";
+      sprintf (comm, "select * from `userinfo` where `id` = %d;", id);
+      puts (comm);
+      if ( !mysql_query (pconn, comm) )
+        {
+          res = mysql_store_result (pconn);
+          row = mysql_fetch_row (res);
+          mysql_free_result (res);
+
+          strcpy (ans.passwd, row[1]);
+          strcpy (ans.nickname, row[2]);
+          ans.avatar = atoi (row[3]);
+          strcpy (ans.bio, row[4]);
+          strcpy (ans.birthday, row[5]);
+        }
+      else
+        {
+          fputs ("Failed to query while getting user!\n", stderr);
+        }
+      mysql_close (pconn);
+      free (pconn);
+    }
+  return ans;
+}
+
 int addgroup (const int ownerid, const char name[])
 {
   MYSQL *pconn;
   MYSQL_RES *res;
   int id = -1;
 
-  if ( (pconn= connect_db ()) != NULL )
+  if ( ( pconn= connect_db ()) != NULL )
     {
       char comm[1024] = "\0";
       sprintf (comm, "select * from `groupinfo`;");
@@ -267,7 +301,7 @@ bool deletefriendship (const int idA, const int idB)
       char comm[1024] = "\0";
       sprintf (comm, "select * from `friendship` where `idold` = %d and `idnew` = '%d';", idold, idnew);
       puts (comm);
-      if ( !mysql_query (pconn, comm))
+      if ( !mysql_query (pconn, comm) )
         {
           res = mysql_store_result (pconn);
           if ( mysql_num_rows (res) == 0)
@@ -278,11 +312,11 @@ bool deletefriendship (const int idA, const int idB)
             {
               sprintf (comm, "delete from `usermessage` where (`masterid` = %d and `goalid` = %d) or (`goalid` = %d and `masterid` = %d);", idold, idnew, idold, idnew);
               puts (comm);
-              if ( !mysql_query (pconn, comm))
+              if ( !mysql_query (pconn, comm) )
                 {
                   sprintf (comm, "delete from `friendship` where `idold` = %d and `idnew` = %d;", idold, idnew);
                   puts (comm);
-                  if ( !mysql_query (pconn, comm))
+                  if ( !mysql_query (pconn, comm) )
                     {
                       suc = true;
                     }
@@ -317,7 +351,7 @@ bool addmembership (const int gid, const int uid)
       char comm[1024] = "\0";
       sprintf (comm, "select * from `membership` where `gid` = %d and `uid` = '%d';", gid, uid);
       puts (comm);
-      if ( !mysql_query (pconn, comm))
+      if ( !mysql_query (pconn, comm) )
         {
           res = mysql_store_result (pconn);
           if ( mysql_num_rows (res) > 0)
@@ -328,7 +362,7 @@ bool addmembership (const int gid, const int uid)
             {
               sprintf (comm, "insert into `membership` values (%d, %d, %d, curdate());", gid, uid, none);
               puts (comm);
-              if ( !mysql_query (pconn, comm))
+              if ( !mysql_query (pconn, comm) )
                 {
                   suc = true;
                 }
@@ -359,7 +393,7 @@ bool deletemembership (const int gid, const int uid)
       char comm[1024] = "\0";
       sprintf (comm, "select * from `membership` where `gid` = %d and `uid` = '%d';", gid, uid);
       puts (comm);
-      if ( !mysql_query (pconn, comm))
+      if ( !mysql_query (pconn, comm) )
         {
           res = mysql_store_result (pconn);
           if ( mysql_num_rows (res) == 0)
@@ -370,11 +404,11 @@ bool deletemembership (const int gid, const int uid)
             {
               sprintf (comm, "delete from `groupmessage` where (`masterid` = %d and `goalid` = %d);", uid, gid);
               puts (comm);
-              if ( !mysql_query (pconn, comm))
+              if ( !mysql_query (pconn, comm) )
                 {
                   sprintf (comm, "delete from `membership` where `gid` = %d and `uid` = %d;", gid, uid);
                   puts (comm);
-                  if ( !mysql_query (pconn, comm))
+                  if ( !mysql_query (pconn, comm) )
                     {
                       suc = true;
                     }
@@ -409,7 +443,7 @@ bool setpermission (const int gid, const int uid, const Permission permission)
       char comm[1024] = "\0";
       sprintf (comm, "select * from `membership` where `gid` = %d and `uid` = '%d';", gid, uid);
       puts (comm);
-      if ( !mysql_query (pconn, comm))
+      if ( !mysql_query (pconn, comm) )
         {
           res = mysql_store_result (pconn);
           if ( mysql_num_rows (res) == 0)
@@ -420,7 +454,7 @@ bool setpermission (const int gid, const int uid, const Permission permission)
             {
               sprintf (comm, "update `membership` set permission = %d where `gid` = %d and `uid` = %d;", permission, gid, uid);
               puts (comm);
-              if ( !mysql_query (pconn, comm))
+              if ( !mysql_query (pconn, comm) )
                 {
                   suc = true;
                 }
@@ -452,7 +486,7 @@ bool addusermessage (const time_t t, const int masterid, const int goalid, const
       char comm[1024] = "\0";
       sprintf (comm, "insert into `usermessage` values (from_unixtime(%ld), %d, %d, '%s');", t, masterid, goalid, text);
       puts (comm);
-      if ( !mysql_query (pconn, comm))
+      if ( !mysql_query (pconn, comm) )
         {
           suc = true;
         }
@@ -476,7 +510,7 @@ bool addgroupmessage (const time_t t, const int masterid, const int goalid, cons
       char comm[1024] = "\0";
       sprintf (comm, "insert into `groupmessage` values (from_unixtime(%ld), %d, %d, '%s');", t, masterid, goalid, text);
       puts (comm);
-      if ( !mysql_query (pconn, comm))
+      if ( !mysql_query (pconn, comm) )
         {
           suc = true;
         }
@@ -491,44 +525,12 @@ bool addgroupmessage (const time_t t, const int masterid, const int goalid, cons
 }
 
 
-//int main ()
-//{
-//  int gid;
-//  printf("%ld\n", time (NULL));
-//  if ( (gid = addgroup (0, "orzlz")) != -1 )
-//    {
-//      puts("👀");
-//      addmembership (gid, 1);
-//      setpermission (gid, 1, admin);
-//      addgroupmessage (time (NULL), 1, gid, "Hi!");
-//      deletemembership (gid, 1);
-//    }
-//  else
-//    {
-//      puts("😂");
-//    }
-//  addfriendship (1, 0);
-//  addusermessage (time (NULL), 1, 0, "I am lz.");
-//  general_array res = listfriendship (1);
-//  puts ("Start.");
-//  for (int i = 0; i < res.num; i++)
-//    {
-//      printf("%d\n", ((int*)res.data)[i]);
-//    }
-//  free (res.data);
-//  return 0;
-//}
-
-//int main ()
-//{
-//  if ( deletefriendship (0, 1) )
-//    {
-//      puts("👀");
-//    }
-//  else
-//    {
-//      puts("😂");
-//    }
-//  return 0;
-//}
+int main ()
+{
+  for (int i = 0; i < 3; i++)
+    {
+      client_info info = getuser (i);
+      printf("%d\t%s\t%s\t%d\t%s\t%s\n", info.id, info.passwd, info.nickname, info.avatar, info.bio, info.birthday);
+    }
+}
 
