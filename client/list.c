@@ -31,22 +31,70 @@ GtkWidget* add_list(GtkWidget *page, const char *str)
  * str好友或群组名字
  *
  */
+//弹出菜单回调函数
+static gint my_popup_handler (GtkWidget *widget, GdkEvent *event)
+{
+    GtkMenu *menu;
+    //要弹出菜单的对象
+    GdkEventButton *event_button;
+
+    g_return_val_if_fail (widget != NULL, FALSE);
+    g_return_val_if_fail (GTK_IS_MENU (widget), FALSE);
+    g_return_val_if_fail (event != NULL, FALSE);
+
+    //转换为菜单
+
+    menu = GTK_MENU (widget);
+    //判断是否是此事件
+    if (event->type == GDK_BUTTON_PRESS)
+    {
+        event_button = (GdkEventButton *) event;
+        //判断是否为左右键
+        if (event_button->button == 3)
+        {      //右键执行操作，第2～5个参数为NULL时表示在鼠标当前位置弹出菜单，
+            //第6个参数表示被按下的按钮，最后一个参数是鼠标按下的时间。
+
+            gtk_menu_popup (menu, NULL, NULL, NULL, NULL,event_button->button, event_button->time);
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
 void add_friend_group(GtkWidget* vbox, const char *str, const char *image_path)
 {
     GtkWidget* button = gtk_button_new();
     GtkWidget* hbox = gtk_hbox_new(TRUE, 0);
     GtkWidget* name_label = gtk_label_new(str);
     GtkWidget* image = gtk_image_new_from_file(image_path);
+    GtkWidget* filemenu;
+    GtkWidget* menuitem;
+    GtkAccelGroup* accel_group;
+
+
+    filemenu = gtk_menu_new();
+    menuitem = gtk_image_menu_item_new_from_stock("删除好友", accel_group);
+    gtk_menu_shell_append(GTK_MENU_SHELL(filemenu), menuitem);
+    gtk_widget_show(menuitem);
+
+//    gtk_menu_item_set_submenu(GTK_MENU_ITEM(rootmenu),filemenu);
+//    gtk_menu_shell_append(GTK_MENU_SHELL(menubar),rootmenu);
     //设置button背景透
     gtk_button_set_relief(button, GTK_RELIEF_NONE);
     //点击信号
     g_signal_connect(G_OBJECT(button), "clicked", G_CALLBACK(chat), NULL);
+    g_signal_connect_swapped(GTK_OBJECT(button),"button_press_event",G_CALLBACK(my_popup_handler), GTK_OBJECT(filemenu));
     gtk_box_pack_start(GTK_BOX(vbox), button, TRUE, TRUE, 0);
     gtk_container_add(GTK_CONTAINER(button), hbox);
     gtk_box_pack_start(GTK_BOX(hbox), image, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(hbox), name_label, TRUE, TRUE, 0);
 
 }
+
+void remove_friend_group(GtkWidget* container)
+{
+
+}
+
 GtkWidget* create_button(char *image_path, char *button_label)
 {
     GtkWidget *box;
@@ -149,7 +197,7 @@ void list()
     button_add_friends = create_button("../client/images/add_friends.png", NULL);
     //把事件盒放到横向的盒子里
     gtk_table_attach_defaults(GTK_TABLE(table), button_add_friends, 0, 16, 37, 40);
-    //g_signal_connect(button_add_friends, "clicked", G_CALLBACK(add_friends), NULL);
+    g_signal_connect(button_add_friends, "clicked", G_CALLBACK(add_friends), NULL);
 
     GtkWidget* my_friend_vbox =add_list(page_friend_vbox, "我的好友");
     add_friend_group(my_friend_vbox, "lalalala", "../client/images/emoji.png");
