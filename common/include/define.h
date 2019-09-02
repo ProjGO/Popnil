@@ -14,7 +14,7 @@
 #define MAX_MSG_LEN 512
 #define DEFAULT_PORT 8088
 
-typedef enum OP_TYPE {LOGIN, REGISTER,ADD_FRIEND,ADD_GROUP,QUIT_GROUP} OP_TYPE;
+typedef enum OP_TYPE {LOGIN, REGISTER,ADD_FRIEND,DELETE_FRIEND,ADD_GROUP,DELETE_GROUP,JOIN_GROUP,QUIT_GROUP} OP_TYPE;
 
 typedef struct login_info_c2s
 {
@@ -28,29 +28,33 @@ typedef struct reg_info_c2s
     char pwd[MAX_PWD_LEN];
 } reg_info_c2s;
 
-typedef struct new_friend_info
+typedef struct oper_friend_info
 {
-    int type;//定义信息类型，1：申请加好友c2s 2:申请加好友s2c 3:回应加好友c2s 4:回应加好友s2c;
+    int type;//定义信息类型 与optype一致
     int id_app;//申请方id
     int id_re;//被申请方id
     int response;//回应：1：同意 2：拒绝
     char msg[100];//提示信息
-} new_friend_info;
+} oper_friend_info;
 
-typedef struct new_group_c2s
+typedef struct oper_group_info
 {
+    int type;//定义信息类型 与optype一致
     char group_name[MAX_NAME_LEN];
-} new_group_s2c;
-
-typedef struct add_group_c2s
-{
     int group_id;
-} add_group_c2s;
+    int owner_id;//创建者id
+    int client_id;//进行操作者id
+} oper_group_info;
 
-typedef struct quit_group_c2s
-{
-    int group_id;
-} quit_group_c2s;
+//typedef struct add_group_c2s
+//{
+//    int group_id;
+//} add_group_c2s;
+//
+//typedef struct quit_group_c2s
+//{
+//    int group_id;
+//} quit_group_c2s;
 
 typedef struct response_s2c
 {

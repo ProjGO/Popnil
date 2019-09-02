@@ -107,10 +107,89 @@ int main(int argc, char **argv)
             {
                 case ADD_FRIEND: //添加好友
                 {
-                    new_friend_info * s=(new_friend_info*)malloc(sizeof(new_friend_info));
+                    oper_friend_info * s=(oper_friend_info*)malloc(sizeof(oper_friend_info));
                     Rio_readlineb(&newclient,s,sizeof(s));
+                    s->type=ADD_FRIEND;
                     s->id_app=check_id_log(fd_log);
-                    operate_friend(s);
+                    if(operate_friend(s))
+                    {
+                        printf("id%d与id%d添加好友成功\n",s->id_app,s->id_re);
+                    }
+                    else
+                    {
+                        printf("添加好友失败\n");
+                    }
+                    free(s);
+                    break;
+                }
+                case DELETE_FRIEND://删除好友
+                {
+                    oper_friend_info * s=(oper_friend_info*)malloc(sizeof(oper_friend_info));
+                    Rio_readlineb(&newclient,s,sizeof(s));
+                    s->type=DELETE_FRIEND;
+                    s->id_app=check_id_log(fd_log);
+                    if(operate_friend(s))
+                    {
+                        printf("id%d与id%d删除好友成功\n",s->id_app,s->id_re);
+                    }
+                    else
+                    {
+                        printf("删除好友失败\n");
+                    }
+                    free(s);
+                    break;
+                }
+                case ADD_GROUP://创建群组
+                {
+                    oper_group_info * s=(oper_group_info*)malloc(sizeof(oper_group_info));
+                    Rio_readlineb(&newclient,s,sizeof(s));
+                    s->type=ADD_GROUP;
+                    s->owner_id=check_id_log(fd_log);
+                    if(operate_group(s))
+                    {
+                        printf("id%d创建群%d\n",s->owner_id,s->group_id);
+                    }
+                    else
+                    {
+                        printf("创建群失败\n");
+                    }
+                    free(s);
+                    break;
+                }
+//                case DELETE_GROUP
+                case JOIN_GROUP://加入群组
+                {
+                    oper_group_info * s=(oper_group_info*)malloc(sizeof(oper_group_info));
+                    Rio_readlineb(&newclient,s,sizeof(s));
+                    s->type=JOIN_GROUP;
+                    s->client_id=check_id_log(fd_log);
+                    if(operate_group(s))
+                    {
+                        printf("id%d加入群%d\n",s->client_id,s->group_id);
+                    }
+                    else
+                    {
+                        printf("加入群失败\n");
+                    }
+                    free(s);
+                    break;
+                }
+                case QUIT_GROUP://退出群组
+                {
+                    oper_group_info * s=(oper_group_info*)malloc(sizeof(oper_group_info));
+                    Rio_readlineb(&newclient,s,sizeof(s));
+                    s->type=QUIT_GROUP;
+                    s->client_id=check_id_log(fd_log);
+                    if(operate_group(s))
+                    {
+                        printf("id%d退出群%d\n",s->client_id,s->group_id);
+                    }
+                    else
+                    {
+                        printf("退出群失败\n");
+                    }
+                    free(s);
+                    break;
                 }
             }
         }
