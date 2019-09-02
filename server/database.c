@@ -42,7 +42,7 @@ bool isuser (const int id, const char passwd[])
   MYSQL_RES *res;
   bool ans = false;
 
-  if ( (pconn= connect_db ()) != NULL )
+  if ( (pconn = connect_db ()) != NULL )
     {
       char comm[1024] = "\0";
       sprintf (comm, "select * from `userinfo` where `id` = %d and `passwd` = '%s';", id, passwd);
@@ -69,7 +69,7 @@ int adduser (const char nick[], const char passwd[])
   MYSQL_RES *res;
   int id = -1;
 
-  if ( (pconn= connect_db ()) != NULL )
+  if ( (pconn = connect_db ()) != NULL )
     {
       char comm[1024] = "\0";
       sprintf (comm, "select * from `userinfo`;");
@@ -98,13 +98,39 @@ int adduser (const char nick[], const char passwd[])
   return id;
 }
 
+void getuser (const int id)
+{
+  MYSQL *pconn;
+  MYSQL_RES *res;
+  MYSQL_ROW row;
+
+  if ( (pconn = connect_db ()) != NULL )
+    {
+      char comm[1024] = "\0";
+      sprintf (comm, "select * from `userinfo` where `id` = %d;", id);
+      puts (comm);
+      if ( !mysql_query (pconn, comm) )
+        {
+          res = mysql_store_result (pconn);
+          row = mysql_fetch_row (res);
+          mysql_free_result (res);
+        }
+      else
+        {
+          fputs ("Failed to query while getting user!\n", stderr);
+        }
+      mysql_close (pconn);
+      free (pconn);
+    }
+}
+
 int addgroup (const int ownerid, const char name[])
 {
   MYSQL *pconn;
   MYSQL_RES *res;
   int id = -1;
 
-  if ( (pconn= connect_db ()) != NULL )
+  if ( ( pconn= connect_db ()) != NULL )
     {
       char comm[1024] = "\0";
       sprintf (comm, "select * from `groupinfo`;");
