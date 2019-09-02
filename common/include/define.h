@@ -45,9 +45,9 @@ typedef struct oper_friend_info
 {
     int type;//定义信息类型 与optype一致
     int id_app;//申请方id
-    int id_appfd;
+    int fd_app;//申请方fd
     int id_re;//被申请方id
-    int id_refd;
+    int fd_re;//被申请方fd
     int response;//回应：1：同意 2：拒绝
     char msg[100];//提示信息
 } oper_friend_info;
