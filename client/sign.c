@@ -48,12 +48,13 @@ int sign_clicked (GtkWidget *window, gpointer data)
             printf ("Error in send\n");
             exit(1);
         }
-        response_s2c *msg;
+        response_s2c *msg=(response_s2c*)malloc(sizeof(response_s2c));
         read(socketfd,msg,sizeof(response_s2c));
         close(socketfd);
         char str[10];
         sprintf(str, "%d", msg->return_val);
         sign_success(str);
+        free(msg);
     }
     else
     {
