@@ -7,10 +7,11 @@
 #include <string.h>
 
 extern int login (int argc, char *argv[]);
-
+extern GtkWidget *window(int argc, char *argv[]);
 
 int main(int argc, char *argv[]){
-    login(argc, argv);
+    window(argc, argv);
+ //   login(argc, argv);
     //sign(argc, argv);
     //sign_success(argc, argv);
     return 0;

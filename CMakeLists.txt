@@ -5,7 +5,7 @@ set(CMAKE_C_STANDARD 99)
 
 add_executable(server server/main.c common/srcs/socket_utils.c common/srcs/rio.c server/login_reg_server.h server/login_reg_server.c server/friend_group_server.c server/friend_group_server.h server/database.c server/database.h)
 
-add_executable(client client/chat.c client/list.c client/login.c client/main.c client/sign.c client/sign_success.c)
+add_executable(client client/chat.c )
 
 
 
