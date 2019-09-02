@@ -110,6 +110,25 @@ int main(int argc, char **argv)
             rio_readlineb(&newclient,&op,sizeof(OP_TYPE));
             switch (op)
             {
+                case SEARCH_FRIEND:
+                {
+                    oper_friend_info * s=(oper_friend_info*)malloc(sizeof(oper_friend_info));
+                    rio_readlineb(&newclient,s,sizeof(s));
+                    s->type=SEARCH_FRIEND;
+                    s->id_appfd=fd_log;
+                    s->id_refd=FD_log[s->id_re];
+                    s->id_app=check_id_log(fd_log);
+                    if(operate_friend(s))
+                    {
+                        printf("id%d查询到id%d的好友\n",s->id_app,s->id_re);
+                    }
+                    else
+                    {
+                        printf("查询好友失败\n");
+                    }
+                    free(s);
+                    break;
+                }
                 case ADD_FRIEND: //添加好友
                 {
                     oper_friend_info * s=(oper_friend_info*)malloc(sizeof(oper_friend_info));
