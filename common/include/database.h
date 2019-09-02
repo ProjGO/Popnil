@@ -15,11 +15,7 @@
 #include <stdbool.h>
 
 
-struct idarray
-{
-  int *p;
-  int len;
-};
+
 
 MYSQL* connect_db (void);
 bool isuser (const int id, const char passwd[]);

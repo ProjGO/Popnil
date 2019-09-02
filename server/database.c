@@ -491,33 +491,33 @@ bool addgroupmessage (const time_t t, const int masterid, const int goalid, cons
 }
 
 
-int main ()
-{
-  int gid;
-  printf("%ld\n", time (NULL));
-  if ( (gid = addgroup (0, "orzlz")) != -1 )
-    {
-      puts("👀");
-      addmembership (gid, 1);
-      setpermission (gid, 1, admin);
-      addgroupmessage (time (NULL), 1, gid, "Hi!");
-      deletemembership (gid, 1);
-    }
-  else
-    {
-      puts("😂");
-    }
-  addfriendship (1, 0);
-  addusermessage (time (NULL), 1, 0, "I am lz.");
-  general_array res = listfriendship (1);
-  puts ("Start.");
-  for (int i = 0; i < res.num; i++)
-    {
-      printf("%d\n", ((int*)res.data)[i]);
-    }
-  free (res.data);
-  return 0;
-}
+//int main ()
+//{
+//  int gid;
+//  printf("%ld\n", time (NULL));
+//  if ( (gid = addgroup (0, "orzlz")) != -1 )
+//    {
+//      puts("👀");
+//      addmembership (gid, 1);
+//      setpermission (gid, 1, admin);
+//      addgroupmessage (time (NULL), 1, gid, "Hi!");
+//      deletemembership (gid, 1);
+//    }
+//  else
+//    {
+//      puts("😂");
+//    }
+//  addfriendship (1, 0);
+//  addusermessage (time (NULL), 1, 0, "I am lz.");
+//  general_array res = listfriendship (1);
+//  puts ("Start.");
+//  for (int i = 0; i < res.num; i++)
+//    {
+//      printf("%d\n", ((int*)res.data)[i]);
+//    }
+//  free (res.data);
+//  return 0;
+//}
 
 //int main ()
 //{

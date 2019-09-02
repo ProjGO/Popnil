@@ -119,4 +119,5 @@ typedef enum Permission
     none
 } Permission;
 
+
 #endif //LINPOP_DEFINE_H
