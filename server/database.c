@@ -419,7 +419,7 @@ bool deletemembership (const int gid, const int uid)
                 }
               else
                 {
-                  fputs ("Failed to query while deleting groupmessages!\n", stderr);
+                  fputs ("Failed to query while deleting memberships!\n", stderr);
                 }
             }
           mysql_free_result (res);
