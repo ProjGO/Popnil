@@ -1,5 +1,5 @@
 
-#include "database.h"
+#include "../common/include/database.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -190,13 +190,15 @@ bool addfriendship (const int idA, const int idB)
   return suc;
 }
 
-struct idarray listfriendship (const int id)
+general_array listfriendship (const int id)
 {
   MYSQL *pconn;
   MYSQL_RES *resnew, *resold;
   MYSQL_ROW row;
   int nold, nnew;
-  struct idarray friends;
+  general_array friends;
+  //int *p;
+  friends.size = sizeof (int);
   if ( (pconn= connect_db ()) != NULL )
     {
       char comm[1024] = "\0";
@@ -212,19 +214,20 @@ struct idarray listfriendship (const int id)
             {
               resnew = mysql_store_result (pconn);
               nnew = mysql_num_rows (resnew);
-              friends.len = nold + nnew;
-              friends.p = (int*)calloc (friends.len, sizeof(int));
+              friends.num = nold + nnew;
+              friends.data = (int*)calloc (friends.num, friends.size);
+              //friends.data = p;
               for (int i = 0; i < nold; i++)
                 {
                   row = mysql_fetch_row (resold);
                   //printf("%s\n", row[0]);
-                  friends.p[i] = atoi (row[0]);
+                  ((int*)friends.data)[i] = atoi (row[0]);
                 }
-              for (int i = nold; i < friends.len ; i++)
+              for (int i = nold; i < friends.size ; i++)
                 {
                   row = mysql_fetch_row (resnew);
                   //printf("%s\n", row[0]);
-                  friends.p[i] = atoi (row[0]);
+                  ((int*)friends.data)[i] = atoi (row[0]);
                 }
               mysql_free_result (resold);
               mysql_free_result (resnew);
@@ -397,7 +400,7 @@ bool deletemembership (const int gid, const int uid)
     }
   return suc;
 }
-bool setpermission (const int gid, const int uid, const enum Permission permission)
+bool setpermission (const int gid, const int uid, const Permission permission)
 {
   MYSQL *pconn;
   MYSQL_RES *res;
@@ -507,12 +510,12 @@ int main ()
     }
   addfriendship (1, 0);
   addusermessage (time (NULL), 1, 0, "I am lz.");
-  struct idarray res = listfriendship (1);
-  for (int i = 0; i < res.len; i++)
+  general_array res = listfriendship (1);
+  for (int i = 0; i < res.size; i++)
     {
-      printf("%d\n", res.p[i]);
+      printf("%d\n", ((int*)res.data)[i]);
     }
-  free (res.p);
+  free (res.data);
   return 0;
 }
 
