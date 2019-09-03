@@ -14,6 +14,7 @@ const char DB_USER[] = "ProjGO";
 const char DB_PASSWD[] = "1234";
 const char DB_NAME[] = "linpop";
 
+
 MYSQL* connect_db (void)
 {
   MYSQL* pconn;
@@ -35,6 +36,7 @@ MYSQL* connect_db (void)
 
 
 }
+
 
 bool isuser (const int id, const char passwd[])
 {
@@ -78,8 +80,8 @@ int adduser (const char nick[], const char passwd[])
         {
           res = mysql_store_result (pconn);
           id = mysql_num_rows (res);
-          sprintf (comm, "insert into `userinfo` values (%d, '%s', '%s', '1', null, null, null, null);", id, passwd, nick);
-          puts ("comm");
+          sprintf (comm, "insert into `userinfo` values (%d, '%s', '%s', 2, '', curdate(), 0, 0);", id, passwd, nick);
+          puts (comm);
           if ( mysql_query (pconn, comm) )
             {
               fputs ("Failed to query while adding user!\n", stderr);
@@ -216,6 +218,30 @@ bool addfriendship (const int idA, const int idB)
   return suc;
 }
 
+bool addtag (const int masterid, const int goalid, const char text[])
+{
+  MYSQL *pconn;
+  MYSQL_RES *res;
+  bool suc = false;
+  if ( (pconn= connect_db ()) != NULL )
+    {
+      char comm[1024] = "\0";
+      sprintf (comm, "insert into `tag` values (%d, %d, '%s');", masterid, goalid, text);
+      puts (comm);
+      if ( !mysql_query (pconn, comm) )
+        {
+          suc = true;
+        }
+      else
+        {
+          fputs ("Failed to query while adding tag.\n", stderr);
+        }
+      mysql_close (pconn);
+      free (pconn);
+    }
+  return suc;
+}
+
 general_array listfriendship (const int id)
 {
   MYSQL *pconn;
@@ -300,6 +326,7 @@ bool deletefriendship (const int idA, const int idB)
     }
   return suc;
 }
+
 bool addmembership (const int gid, const int uid)
 {
   MYSQL *pconn;
@@ -332,6 +359,48 @@ bool addmembership (const int gid, const int uid)
             }
           mysql_free_result (res);
         }
+      else
+        {
+          fputs ("Failed to query while counting memberships!\n", stderr);
+        }
+      mysql_close (pconn);
+      free (pconn);
+    }
+  return suc;
+}
+
+bool setpermission (const int gid, const int uid, const Permission permission)
+{
+  MYSQL *pconn;
+  MYSQL_RES *res;
+  bool suc = false;
+  if ( (pconn= connect_db ()) != NULL )
+    {
+      char comm[1024] = "\0";
+      sprintf (comm, "select * from `membership` where `gid` = %d and `uid` = '%d';", gid, uid);
+      puts (comm);
+      if ( !mysql_query (pconn, comm) )
+        {
+          res = mysql_store_result (pconn);
+          if ( mysql_num_rows (res) == 0)
+            {
+              suc = true;
+            }
+          else
+            {
+              sprintf (comm, "update `membership` set permission = %d where `gid` = %d and `uid` = %d;", permission, gid, uid);
+              puts (comm);
+              if ( !mysql_query (pconn, comm) )
+                {
+                  suc = true;
+                }
+              else
+                {
+                  fputs ("Failed to query while setting permission!\n", stderr);
+                }
+            }
+          mysql_free_result (res);
+       }
       else
         {
           fputs ("Failed to query while counting memberships!\n", stderr);
@@ -427,48 +496,6 @@ bool deletemembership (const int gid, const int uid)
     }
   return suc;
 }
-bool setpermission (const int gid, const int uid, const Permission permission)
-{
-  MYSQL *pconn;
-  MYSQL_RES *res;
-  bool suc = false;
-  if ( (pconn= connect_db ()) != NULL )
-    {
-      char comm[1024] = "\0";
-      sprintf (comm, "select * from `membership` where `gid` = %d and `uid` = '%d';", gid, uid);
-      puts (comm);
-      if ( !mysql_query (pconn, comm) )
-        {
-          res = mysql_store_result (pconn);
-          if ( mysql_num_rows (res) == 0)
-            {
-              suc = true;
-            }
-          else
-            {
-              sprintf (comm, "update `membership` set permission = %d where `gid` = %d and `uid` = %d;", permission, gid, uid);
-              puts (comm);
-              if ( !mysql_query (pconn, comm) )
-                {
-                  suc = true;
-                }
-              else
-                {
-                  fputs ("Failed to query while setting permission!\n", stderr);
-                }
-            }
-          mysql_free_result (res);
-       }
-      else
-        {
-          fputs ("Failed to query while counting memberships!\n", stderr);
-        }
-      mysql_close (pconn);
-      free (pconn);
-    }
-  return suc;
-}
-
 
 bool addusermessage (const time_t t, const int masterid, const int goalid, const char text[])
 {
