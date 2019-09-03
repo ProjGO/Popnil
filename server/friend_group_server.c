@@ -19,7 +19,14 @@ int operate_friend(oper_friend_info * s)
             free(c);
             return 1;
         }
-        case ADD_FRIEND:return(addfriendship(s->id_app,s->id_re));
+        case ADD_FRIEND: //添加好友
+        {
+            client_info* new_friend=(client_info*)malloc(sizeof(client_info));
+            *new_friend=getuser(s->id_re);
+            write(s->fd_app,new_friend, sizeof(client_info)); //返回好友信息
+            free(new_friend);
+            return(addfriendship(s->id_app,s->id_re));
+        }
         case DELETE_FRIEND:return(deletefriendship(s->id_app,s->id_re));
     }
 }

@@ -26,8 +26,6 @@ void add()
                                     GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, type ,
             GTK_BUTTONS_OK,
             message);
-    gtk_dialog_run(GTK_DIALOG(dialog));
-    gtk_widget_destroy(dialog);
     oper_friend_info * msg=(oper_friend_info*)malloc(sizeof(oper_friend_info));
     msg->id_re=atoi(gtk_label_get_text(id));
     int flag=ADD_FRIEND;
@@ -42,6 +40,8 @@ void add()
         exit(1);
     }
     free(msg);
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
 }
 void search(GtkWidget *window, gpointer data)
 {
