@@ -21,7 +21,7 @@ int check_clients(pool *p);
 int check_clients(pool *p);
 int check_id_log(int fd);
 
-int byte_cnt=0;
+int byte_cnt = 0;
 
 int main(int argc, char **argv)
 {
@@ -57,7 +57,7 @@ int main(int argc, char **argv)
             rio_t newclient;
             rio_readinitb(&newclient,fd_log);
             rio_readnb(&newclient,&op,sizeof(OP_TYPE));
-            //read(fd_log,&op, sizeof(OP_TYPE));
+//            read(fd_log,&op, sizeof(OP_TYPE));
             switch(op)
             {
                 case LOGIN: //登录功能
@@ -113,19 +113,18 @@ int main(int argc, char **argv)
                 case SEARCH_FRIEND://查找好友
                 {
                     oper_friend_info * s=(oper_friend_info*)malloc(sizeof(oper_friend_info));
-//                    read(fd_log,s,sizeof(oper_friend_info));
-                    rio_readnb(&newclient,s,sizeof(oper_friend_info));
-                    s->type=SEARCH_FRIEND;
+                    rio_readlineb(&newclient,s,sizeof(s));
+                    s->type=ADD_FRIEND;
                     s->id_app=check_id_log(fd_log);
                     s->fd_app=fd_log;
                     s->fd_re=FD_log[s->id_re];
                     if(operate_friend(s))
                     {
-                        printf("id%d查询id%d成功\n",s->id_app,s->id_re);
+                        printf("id%d与id%d添加好友成功\n",s->id_app,s->id_re);
                     }
                     else
                     {
-                        printf("查询好友失败\n");
+                        printf("添加好友失败\n");
                     }
                     free(s);
                     break;
@@ -133,7 +132,7 @@ int main(int argc, char **argv)
                 case ADD_FRIEND: //添加好友
                 {
                     oper_friend_info * s=(oper_friend_info*)malloc(sizeof(oper_friend_info));
-                    rio_readlineb(&newclient,s,sizeof(oper_friend_info));
+                    rio_readlineb(&newclient,s,sizeof(s));
                     s->type=ADD_FRIEND;
                     s->id_app=check_id_log(fd_log);
                     if(operate_friend(s))
@@ -150,7 +149,7 @@ int main(int argc, char **argv)
                 case DELETE_FRIEND://删除好友
                 {
                     oper_friend_info * s=(oper_friend_info*)malloc(sizeof(oper_friend_info));
-                    rio_readlineb(&newclient,s,sizeof(oper_friend_info));
+                    rio_readlineb(&newclient,s,sizeof(s));
                     s->type=DELETE_FRIEND;
                     s->id_app=check_id_log(fd_log);
                     if(operate_friend(s))
@@ -167,7 +166,7 @@ int main(int argc, char **argv)
                 case ADD_GROUP://创建群组
                 {
                     oper_group_info * s=(oper_group_info*)malloc(sizeof(oper_group_info));
-                    rio_readlineb(&newclient,s,sizeof(oper_friend_info));
+                    rio_readlineb(&newclient,s,sizeof(s));
                     s->type=ADD_GROUP;
                     s->owner_id=check_id_log(fd_log);
                     if(operate_group(s))
@@ -185,7 +184,7 @@ int main(int argc, char **argv)
                 case JOIN_GROUP://加入群组
                 {
                     oper_group_info * s=(oper_group_info*)malloc(sizeof(oper_group_info));
-                    rio_readlineb(&newclient,s,sizeof(oper_friend_info));
+                    rio_readlineb(&newclient,s,sizeof(s));
                     s->type=JOIN_GROUP;
                     s->client_id=check_id_log(fd_log);
                     if(operate_group(s))
@@ -202,7 +201,7 @@ int main(int argc, char **argv)
                 case QUIT_GROUP://退出群组
                 {
                     oper_group_info * s=(oper_group_info*)malloc(sizeof(oper_group_info));
-                    rio_readlineb(&newclient,s,sizeof(oper_friend_info));
+                    rio_readlineb(&newclient,s,sizeof(s));
                     s->type=QUIT_GROUP;
                     s->client_id=check_id_log(fd_log);
                     if(operate_group(s))
@@ -222,19 +221,19 @@ int main(int argc, char **argv)
                     client_info cur_friend_info;
                     rio_readnb(&newclient, &user_id, sizeof(int)); // 从客户端接收用户id
                     client_info user_info = getuser(user_id); // 获取用户本人的信息
-                    rio_writen(fd_log, &user_info, sizeof(client_info)); // 发送用户本人信息
-
+                    write(fd_log, &user_info, sizeof(client_info)); // 发送用户本人信息
+                    
                     general_array related_ids_array = listfriendship(user_id); // 获取用户好友及群的信息
                     int related_ids_num = related_ids_array.num;
                     int *related_ids = (int*)related_ids_array.data;
-                    rio_writen(fd_log, &related_ids_num, sizeof(int)); // 告诉客户端有几个要传
+                    write(fd_log, &related_ids_num, sizeof(int)); // 告诉客户端有几个要传
                     for(int i = 0; i < related_ids_num; i++)
                     {
                         ///zzk changed
                         cur_friend_info.id = related_ids[i];
                         client_info tem;
                         tem = getuser(cur_friend_info.id);
-                        rio_writen(fd_log,&tem, sizeof(client_info));
+                        write(fd_log,&tem, sizeof(client_info));
                         //向客户端逐条发好友信息
                     }
                 }
@@ -282,7 +281,9 @@ void add_client(int connfd, pool *p)
 
 int check_clients(pool *p)
 {
-    int i, connfd;
+    int i, connfd, n;
+    char buf[1024];
+    rio_t rio;
 
     for(i = 0; (i <= p->maxi) && (p->nready > 0); i++)
     {
