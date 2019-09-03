@@ -1,0 +1,12 @@
+select * from `friendship` where (`idA` = 0 and `idB` = '1') or (`idA` = 1 and `idB` = 0);
+insert into `friendship` values (0, 1, curdate()), (1, 0, curdate());
+select * from `friendship` where (`idA` = 1 and `idB` = '2') or (`idA` = 2 and `idB` = 1);
+insert into `friendship` values (1, 2, curdate()), (2, 1, curdate());
+select * from `friendship` where (`idA` = 2 and `idB` = '7') or (`idA` = 7 and `idB` = 2);
+insert into `friendship` values (2, 7, curdate()), (7, 2, curdate());
+select * from `friendship` where (`idA` = 3 and `idB` = '5') or (`idA` = 5 and `idB` = 3);
+insert into `friendship` values (3, 5, curdate()), (5, 3, curdate());
+select * from `friendship` where (`idA` = 3 and `idB` = '6') or (`idA` = 6 and `idB` = 3);
+insert into `friendship` values (3, 6, curdate()), (6, 3, curdate());
+select * from `friendship` where (`idA` = 4 and `idB` = '5') or (`idA` = 5 and `idB` = 4);
+insert into `friendship` values (4, 5, curdate()), (5, 4, curdate());
