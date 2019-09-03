@@ -15,8 +15,34 @@ char* default_image_path = "../client/images/friend_portrait.png";
 char* default_id = "1120173454";
 char* default_name = "xdx";
 extern GtkWidget *create_button(char *image_path, char *button_label);
-void add()
+extern GtkWidget *page_friend_vbox;
+extern void add_list_friends(GtkWidget* page, const char* list_name, const char* friend_name, const char* image);
+
+
+
+
+
+void add(GtkWidget *window, gpointer data)
 {
+    oper_friend_info *id_friend=(oper_friend_info*)malloc(sizeof(oper_friend_info));
+    id_friend->id_re=atoi(gtk_entry_get_text(GTK_ENTRY((GtkWidget *) search_entry)));
+    int flag;
+    flag=3;
+//    write(fd_log,&flag,sizeof(int));
+//    write(fd_log,id_text,sizeof(oper_friend_info));
+    if (write(fd_log, &flag, sizeof(int)) == -1 )
+    {
+        printf ("Error in send\n");
+        exit(1);
+    }
+    if (write(fd_log, id_friend, sizeof(oper_friend_info)) == -1 )
+    {
+        printf ("Error in send\n");
+        exit(1);
+    }
+    free(id_friend);
+    client_info *msg=(client_info*)malloc(sizeof(client_info));
+    read(fd_log, msg, sizeof(client_info));
     GtkWidget* dialog ;
     GtkMessageType type ;
     gchar *message;
@@ -26,20 +52,11 @@ void add()
                                     GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, type ,
             GTK_BUTTONS_OK,
             message);
-    oper_friend_info * msg=(oper_friend_info*)malloc(sizeof(oper_friend_info));
-    msg->id_re=atoi(gtk_label_get_text(id));
-    int flag=ADD_FRIEND;
-    if (write(fd_log, &flag, sizeof(int)) == -1 )
-    {
-        printf ("Error in send\n");
-        exit(1);
-    }
-    if (write(fd_log, msg, sizeof(oper_friend_info)) == -1 )
-    {
-        printf ("Error in send\n");
-        exit(1);
-    }
-    free(msg);
+
+//    client_info* new_friend=(client_info*)malloc(sizeof(client_info));
+//    read(fd_log,new_friend,sizeof(client_info));
+    add_list_friends(page_friend_vbox, "my friend", msg->nickname, default_image_path);
+    gtk_widget_show(page_friend_vbox);
     gtk_dialog_run(GTK_DIALOG(dialog));
     gtk_widget_destroy(dialog);
 }
@@ -61,6 +78,7 @@ void search(GtkWidget *window, gpointer data)
         printf ("Error in send\n");
         exit(1);
     }
+    free(id_text);
     client_info *msg=(client_info*)malloc(sizeof(client_info));
     read(fd_log, msg, sizeof(client_info));
     if(msg->id==-1)

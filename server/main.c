@@ -135,6 +135,8 @@ int main(int argc, char **argv)
                     rio_readnb(&newclient,s,sizeof(oper_friend_info));
                     s->type=ADD_FRIEND;
                     s->id_app=check_id_log(fd_log);
+                    s->fd_app=fd_log;
+                    s->fd_re=FD_log[s->id_re];
                     if(operate_friend(s))
                     {
                         printf("id%d与id%d添加好友成功\n",s->id_app,s->id_re);

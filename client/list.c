@@ -14,7 +14,7 @@ extern rio_t rio_log, rio_chat, rio_file;
 extern void update_widget_bg(GtkWidget *widget, int w,int h, const gchar *img_file);
 GtkWidget *image_usericon;
 GtkWidget *window_list;
-
+GtkWidget *page_friend_vbox;
 ////好友(群组)列表的个数max & 每个列表中好友(群组)的个数max
 #define MAX_LIST_NUM 100
 #define MAX_LIST_FRIEND_GROUP_NUM 100
@@ -318,7 +318,6 @@ void list()
     GtkWidget *button_setting;
     GtkWidget *search_entry;
     GtkWidget *notebook;
-    GtkWidget *page_friend_vbox;
     GtkWidget *notebook_image_friend;
     GtkWidget *page_group_vbox;
     GtkWidget *notebook_image_group;
