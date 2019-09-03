@@ -14,10 +14,8 @@ extern void list();
 //const char password[MAX_PWD_LEN] = "secret";
 extern int fd_log,fd_chat,fd_file;
 GtkWidget *username_entry, *password_entry;
-GtkWidget *window;
-void button_clicked (gpointer data)
+void button_clicked (GtkWidget *window, gpointer data)
 {
-
     login_info *info = (login_info *) malloc(sizeof(login_info));
     memset(&info->id,0, sizeof(info->id));
     memset(info->pwd,0,sizeof(info->pwd));
@@ -42,12 +40,12 @@ void button_clicked (gpointer data)
         }
         response_s2c *msg = (response_s2c*)malloc(sizeof(response_s2c));
 //        read(fd_log,msg, sizeof(response_s2c));
-
         if(msg->return_val||1)
         {
             fd_chat = open_clientfd_old(DEFAULT_IP,DEFAULT_PORT);
             fd_file = open_clientfd_old(DEFAULT_IP,DEFAULT_PORT);
-            gtk_widget_destroy(window);
+            g_signal_connect ( window, "destroy",
+                               G_CALLBACK (gtk_main_quit), NULL);
             list();
         }
         else
@@ -57,7 +55,7 @@ void button_clicked (gpointer data)
 
 int login (int argc, char *argv[])
 {
-
+    GtkWidget *window;
     GtkWidget *sign_button, *retrieve_button;
 //
     GtkWidget *ok_button;

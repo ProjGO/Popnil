@@ -1,5 +1,6 @@
 #include <gtk/gtk.h>
 #include "tools.h"
+#include "../common/include/define.h"
 
 const char * friend_name = "friend_a";
 extern GtkWidget *create_bbox(GtkTextBuffer *input_buffer1 );
@@ -9,8 +10,24 @@ SunGtkCList* log_list = NULL;
 GtkWidget *FileSelection;
 GtkTextBuffer *buffer;
 GtkWidget *icon;
+GtkWidget *input;
 
+extern int fd_log, fd_chat, fd_file;
+extern int all_ids[100]; // 所有与这个人有关系的id,在登陆时由服务器告知,并在加好友/群时更新
+extern int all_ids_cnt; // 字面意思
 
+extern GtkWidget * id2window[100];
+
+text_pack_t recved_messages[100];
+int recved_messages_cnt = 0;
+
+void send_button_clicked(GtkWidget *window, gpointer *data)
+{
+    text_pack_t text_pack;
+    strcpy(text_pack.text, gtk_entry_get_text(GTK_ENTRY((GtkWidget *)input)));
+    text_pack.id = 1;//////////////////////////////
+    rio_writen(fd_chat,&text_pack, sizeof(text_pack_t));
+}
 
 void on_font_select_ok (GtkWidget *button,GtkFontSelectionDialog *fs)
 {
@@ -162,7 +179,7 @@ GtkWidget* chat()
     GtkWidget *friend_name_label;
     GtkWidget *friend_portrait, *emoji, *doc, *font;
     GtkWidget *send_button, *font_button, *emoji_button, *doc_button, *history_button;
-    GtkWidget *input;
+//     GtkWidget *input;
     GtkWidget *scrolled_window;
     GtkWidget *table_chat;
 
@@ -212,6 +229,7 @@ GtkWidget* chat()
 
     hbox1 = gtk_hbox_new(TRUE, 1);
     send_button = gtk_button_new_with_label("发送");
+    g_signal_connect(send_button,"clicked",G_CALLBACK(send_button_clicked), NULL);
 
     friend_portrait=gtk_image_new_from_file("../client/images/friend_portrait.png");
     gtk_container_add(GTK_CONTAINER(hbox1), friend_portrait);
@@ -300,4 +318,9 @@ GtkWidget* chat()
 
     gtk_main();
     return window;
+}
+
+void *check_new_msgs(void *vargp)
+{
+
 }

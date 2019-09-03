@@ -17,7 +17,8 @@
 #define DEFAULT_IP "127.0.0.1"
 
 /*-----------------------------------用户登陆注册等相关------------------------------------*/
-typedef enum OP_TYPE {LOGIN, REGISTER,SEARCH_FRIEND,ADD_FRIEND,DELETE_FRIEND,ADD_GROUP,DELETE_GROUP,JOIN_GROUP,QUIT_GROUP} OP_TYPE;
+typedef enum OP_TYPE {LOGIN, REGISTER,SEARCH_FRIEND,ADD_FRIEND,DELETE_FRIEND,ADD_GROUP,DELETE_GROUP,
+                      JOIN_GROUP,QUIT_GROUP,UPDATE} OP_TYPE;
 
 typedef struct client_info
 {
@@ -71,6 +72,13 @@ typedef struct oper_group_info
 //    int group_id;
 //} quit_group_c2s;
 
+typedef struct friend_info_s2c
+{
+    int id;
+    char name[MAX_NAME_LEN];
+    int pic;
+} friend_info;
+
 typedef struct response_s2c
 {
     int return_val; //0表示操作失败，1表示操作成功
@@ -84,7 +92,7 @@ typedef enum MSG_TYPE {TEXT, PIC} MSG_TYPE;
 typedef struct text_pack_t
 {
     int id;
-    char time;
+    char time[TIME_INFO_LEN];
     char text[MAX_MSG_LEN];
 } text_pack_t;
 

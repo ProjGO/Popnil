@@ -28,4 +28,5 @@ bool deletemembership (const int gid, const int uid);
 bool setpermission (const int gid, const int uid, const Permission permission);
 bool addusermessage (const time_t t, const int masterid, const int goalid, const char text[]);
 bool addgroupmessage (const time_t t, const int masterid, const int goalid, const char text[]);
-
+client_info getuser (const int id);
+general_array listfriendship (const int id);
