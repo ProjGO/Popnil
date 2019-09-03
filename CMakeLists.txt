@@ -10,7 +10,7 @@ add_executable(server server/main.c common/srcs/socket_utils.c common/srcs/rio.c
 
 add_executable(client client/list.c client/login.c client/main.c client/sign.c client/sign_success.c common/srcs/rio.c
         common/srcs/socket_utils.c client/add_friend.c client/chat_new.c client/emoji.c client/tools.c client/tools.h client/set.c
-        client/select_portrait.c client/update_info.c)
+        client/select_portrait.c client/update_info.c client/add_groups.c client/set_background.c client/group_chat.c)
 
 add_executable(client_chat common/srcs/socket_utils.c common/srcs/rio.c)
 

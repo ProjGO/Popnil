@@ -5,6 +5,10 @@
 #include <gtk/gtk.h>
 
 extern GtkWidget *select_portrait();
+extern GtkWidget *add_friend_window;
+extern GtkWidget *window_list;
+
+extern void update_widget_bg(GtkWidget *widget, int w,int h, const gchar *img_file);
 
 void addLabel(GtkWidget *info_table, const char *str, int columnl, int columnr, int rowu, int rowd)
 {
@@ -55,6 +59,35 @@ void deal_switch_page(GtkNotebook *notebook, gpointer page, guint page_num, gpoi
     return;
 }
 
+void button1_clicked()
+{
+    update_widget_bg(window_list,300, 500, "../client/images/bg/1.jpg");
+}
+
+void button2_clicked()
+{
+    update_widget_bg(window_list,300, 500, "../client/images/bg/2.jpg");
+}
+
+void button3_clicked()
+{
+    update_widget_bg(window_list,300, 500, "../client/images/bg/3.jpg");
+}
+
+void button4_clicked()
+{
+    update_widget_bg(window_list,300, 500, "../client/images/bg/4.jpg");
+}
+
+void button5_clicked()
+{
+    update_widget_bg(window_list,300, 500, "../client/images/bg/5.jpg");
+}
+
+void button6_clicked()
+{
+    update_widget_bg(window_list,300, 500, "../client/images/bg/6.jpg");
+}
 GtkWidget* setting()
 {
 
@@ -285,7 +318,23 @@ GtkWidget* setting()
     gtk_table_attach_defaults(GTK_TABLE(table),bg6,14,20,5,9);
     gtk_table_attach_defaults(GTK_TABLE(table),button6,16,18,9,10);
 
+    g_signal_connect(G_OBJECT(button1),"clicked",
+                     G_CALLBACK(button1_clicked),NULL);
 
+    g_signal_connect(G_OBJECT(button2),"clicked",
+                     G_CALLBACK(button2_clicked),NULL);
+
+    g_signal_connect(G_OBJECT(button3),"clicked",
+                     G_CALLBACK(button3_clicked),NULL);
+
+    g_signal_connect(G_OBJECT(button4),"clicked",
+                     G_CALLBACK(button4_clicked),NULL);
+
+    g_signal_connect(G_OBJECT(button5),"clicked",
+                     G_CALLBACK(button5_clicked),NULL);
+
+    g_signal_connect(G_OBJECT(button6),"clicked",
+                     G_CALLBACK(button6_clicked),NULL);
 
 
     g_signal_connect(notebook, "switch-page", G_CALLBACK(deal_switch_page), NULL);

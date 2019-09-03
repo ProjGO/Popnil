@@ -130,6 +130,7 @@ typedef struct _clist_link
     GtkWidget *image;
     GtkWidget *name;
     GtkWidget *table;
+    gint id;
     struct _clist_link *next;
 }CListLink;
 
@@ -158,7 +159,7 @@ extern SunGtkCList *sungtk_clist_new();
 extern int sungtk_clist_unref(SunGtkCList *clist);
 
 //׷��һ��
-extern int sungtk_clist_append(SunGtkCList *clist, const gchar *text, const gchar *image, const gchar* name);
+extern int sungtk_clist_append(SunGtkCList *clist, const gchar *text, const gchar *image, const gchar* name,const gint id);
 
 //����ǰ����ɫ
 extern int sungtk_clist_set_foreground(SunGtkCList *clist, const gchar *color_buf);

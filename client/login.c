@@ -13,11 +13,8 @@ extern GtkWidget * sign();
 extern void list();
 //const char password[MAX_PWD_LEN] = "secret";
 extern int fd_log,fd_chat,fd_file;
-extern rio_t rio_log, rio_chat, rio_file;
-
-extern int usr_id;
-
 GtkWidget *username_entry, *password_entry;
+GtkWidget *window_login;
 void button_clicked (GtkWidget *window, gpointer data)
 {
     login_info *info = (login_info *) malloc(sizeof(login_info));
@@ -43,19 +40,15 @@ void button_clicked (GtkWidget *window, gpointer data)
             exit(1);
         }
         response_s2c *msg = (response_s2c*)malloc(sizeof(response_s2c));
-        read(fd_log, msg, sizeof(response_s2c));
-        if(msg->return_val)
+//        read(fd_log,msg, sizeof(response_s2c));
+        if(msg->return_val||1)
         {
-            usr_id = info->id;
             fd_chat = open_clientfd_old(DEFAULT_IP,DEFAULT_PORT);
             fd_file = open_clientfd_old(DEFAULT_IP,DEFAULT_PORT);
             g_signal_connect ( window, "destroy",
                                G_CALLBACK (gtk_main_quit), NULL);
-            rio_readinitb(&rio_log, fd_log);
-            rio_readinitb(&rio_chat, fd_chat);
-            rio_readinitb(&rio_file, fd_file);
+            gtk_widget_destroy(window_login);
             list();
-
         }
         else
             printf("%s\n",msg->err_msg);
@@ -64,7 +57,7 @@ void button_clicked (GtkWidget *window, gpointer data)
 
 int login (int argc, char *argv[])
 {
-    GtkWidget *window;
+
     GtkWidget *sign_button, *retrieve_button;
 //
     GtkWidget *ok_button;
@@ -75,13 +68,13 @@ int login (int argc, char *argv[])
 
     gtk_init(&argc, &argv);
 
-    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);	//创建窗口
-    gtk_window_set_title(GTK_WINDOW(window), "GtkEntryBox");	//设置标题
-    gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);	//设置位置
-    gtk_window_set_default_size(GTK_WINDOW(window), 550, 350);		//设置默认大小
-    gtk_window_set_resizable(GTK_WINDOW(window),FALSE);
+    window_login = gtk_window_new(GTK_WINDOW_TOPLEVEL);	//创建窗口
+    gtk_window_set_title(GTK_WINDOW(window_login), "GtkEntryBox");	//设置标题
+    gtk_window_set_position(GTK_WINDOW(window_login), GTK_WIN_POS_CENTER);	//设置位置
+    gtk_window_set_default_size(GTK_WINDOW(window_login), 550, 350);		//设置默认大小
+    gtk_window_set_resizable(GTK_WINDOW(window_login),FALSE);
 
-    g_signal_connect ( window, "destroy",
+    g_signal_connect ( window_login, "destroy",
                        G_CALLBACK (gtk_main_quit), NULL);	//为窗口连接“退出事件”
 
     sign_button = gtk_button_new_with_label("注册账号");
@@ -142,10 +135,10 @@ int login (int argc, char *argv[])
     gtk_box_pack_start(GTK_BOX(vbox), ok_button, FALSE, FALSE, 1);
 
 
-    gtk_container_add(GTK_CONTAINER(window), vbox);
+    gtk_container_add(GTK_CONTAINER(window_login), vbox);
 
 
-    gtk_widget_show_all(window);	//show窗口
+    gtk_widget_show_all(window_login);	//show窗口
     gtk_main ();
 
     return 0;
