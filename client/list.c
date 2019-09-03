@@ -4,13 +4,14 @@
 //extern local_user_info;
 extern GtkWidget *add_friends();
 extern GtkWidget *add_groups();
-extern GtkWidget *chat();
+extern GtkWidget *chat(char *target_name, int *target_id);
 extern GtkWidget *group_chat();
 extern GtkWidget *setting();
+
 extern void update_widget_bg(GtkWidget *widget, int w,int h, const gchar *img_file);
 GtkWidget *image_usericon;
 GtkWidget *window_list;
-
+GtkWidget *search_entry_friend_list;
 ////好友(群组)列表的个数max & 每个列表中好友(群组)的个数max
 #define MAX_LIST_NUM 100
 #define MAX_LIST_FRIEND_GROUP_NUM 100
@@ -180,7 +181,7 @@ void add_list_friends(GtkWidget* page, const char* list_name, const char* friend
     {
         //需要新建列表
         for (i = 1; i < MAX_LIST_NUM; i++) {
-            if (group[i][0].friend_group_num == 0)
+            if (friend[i][0].friend_group_num == 0)
             {
                 break;
             }
@@ -188,6 +189,7 @@ void add_list_friends(GtkWidget* page, const char* list_name, const char* friend
         friend[i][0].friend_group_num = 1;
         strcpy(friend[i][0].list_name, list_name);
         strcpy(friend[i][1].number_name, friend_name);
+        friend[i][1].is_empty = FALSE;
         //将好友添加到界面中
 //        GtkWidget* vbox = add_list(page, list_name);
         friend[i][0].vbox = add_list(page, list_name);
@@ -243,6 +245,7 @@ void add_list_groups(GtkWidget* page, const char* list_name, const char* group_n
         group[i][0].friend_group_num = 1;
         strcpy(group[i][0].list_name, list_name);
         strcpy(group[i][1].number_name, group_name);
+        group[i][1].is_empty = FALSE;
         //将好友添加到界面中
 //        GtkWidget* vbox = add_list(page, list_name);
         group[i][0].vbox = add_list(page, list_name);
@@ -277,13 +280,40 @@ GtkWidget* create_button(char *image_path, char *button_label)
     gtk_widget_show(box);
     return button;
 }
+
+/*
+ * 搜索好友功能
+ */
+void search_friend()
+{
+    char* text = gtk_entry_get_text(search_entry_friend_list);
+    int i, j;
+    int a = 1;
+    for (i = 1; i < MAX_LIST_NUM; i++)
+    {
+        for (j = 1; j < MAX_LIST_FRIEND_GROUP_NUM; j++)
+        {
+
+//            if (!friend[i][j].is_empty)
+//              printf("%s\n", friend[i][j].number_name);
+            if (!friend[i][j].is_empty && strcmp(friend[i][j].number_name, text) == 0)
+            {
+                chat(friend[i][j].number_name, &a);
+                break;
+            }
+
+        }
+    }
+}
+
+
+
 void list()
 {
 
     GtkWidget *table;
     GtkWidget *label_username;
     GtkWidget *button_setting;
-    GtkWidget *search_entry;
     GtkWidget *notebook;
     GtkWidget *page_friend_vbox;
     GtkWidget *notebook_image_friend;
@@ -321,11 +351,12 @@ void list()
 
     GdkPixbuf * pixbuf= gdk_pixbuf_new_from_file("../client/images/search.png", FALSE);
 
-    search_entry = gtk_entry_new();
-    gtk_table_attach_defaults(GTK_TABLE(table),search_entry, 0, 16, 6, 8);
-    gtk_entry_set_has_frame(search_entry, FALSE);
-    gtk_entry_set_icon_from_pixbuf(search_entry, GTK_ENTRY_ICON_PRIMARY, pixbuf);
-    gtk_entry_set_text(search_entry, "Search...");
+    search_entry_friend_list = gtk_entry_new();
+    gtk_table_attach_defaults(GTK_TABLE(table),search_entry_friend_list, 0, 16, 6, 8);
+    gtk_entry_set_has_frame(search_entry_friend_list, FALSE);
+    gtk_entry_set_icon_from_pixbuf(search_entry_friend_list, GTK_ENTRY_ICON_PRIMARY, pixbuf);
+    gtk_entry_set_text(search_entry_friend_list, "Search...");
+    g_signal_connect(GTK_OBJECT(search_entry_friend_list), "activate", G_CALLBACK(search_friend), NULL);
 
 
     notebook = gtk_notebook_new();
@@ -354,10 +385,10 @@ void list()
     button_add_friends = create_button("../client/images/add_friends.png", NULL);
     button_add_groups = create_button("../client/images/add_groups.png", NULL);
     //把事件盒放到横向的盒子里
-    gtk_table_attach_defaults(GTK_TABLE(table), button_add_friends, 1, 5, 37, 40);
+    gtk_table_attach_defaults(GTK_TABLE(table), button_add_friends, 0, 4, 37, 40);
     g_signal_connect(button_add_friends, "clicked", G_CALLBACK(add_friends), NULL);
 
-    gtk_table_attach_defaults(GTK_TABLE(table), button_add_groups, 6, 10, 37, 40);
+    gtk_table_attach_defaults(GTK_TABLE(table), button_add_groups, 4, 8, 37, 40);
     g_signal_connect(button_add_groups, "clicked", G_CALLBACK(add_groups), NULL);
 
 //    GtkWidget* my_friend_vbox =add_list(page_friend_vbox, "我的好友");
@@ -367,6 +398,8 @@ void list()
     add_list_friends(page_friend_vbox, "my friend", "lalalal", "../client/images/emoji.png");
     add_list_friends(page_friend_vbox, "我的同学", "xdx", "../client/images/emoji.png");
     add_list_friends(page_friend_vbox, "我的同学", "666", "../client/images/emoji.png");
+    add_list_friends(page_friend_vbox, "my friend", "hahaalal", "../client/images/emoji.png");
+
 
     add_list_groups(page_group_vbox, "my friend", "liuzhen", "../client/images/emoji.png");
     add_list_groups(page_group_vbox, "my friend", "lalalal", "../client/images/emoji.png");

@@ -10,73 +10,118 @@ extern void update_widget_bg(GtkWidget *widget, int w,int h, const gchar *img_fi
 
 extern GtkWidget *image_usericon;
 
+extern GtkWidget *portrait;
+
 //void buttons1_clicked()
 //{
 //    update_widget_bg(window_list,300, 500, "../client/images/bg/1.jpg");
 //}
 
 void buttons1_clicked(){
-
-    printf("buttons1 begin");
     GdkPixbuf *src = gdk_pixbuf_new_from_file("../client/images/list_portrait/1.png", NULL);
     gtk_image_set_from_pixbuf( GTK_IMAGE(image_usericon), src);
+
+    src = gdk_pixbuf_new_from_file("../client/images/list_portrait/1.png", NULL);
+    GdkPixbuf * dst = gdk_pixbuf_scale_simple(src,
+                                              150, 150, GDK_INTERP_BILINEAR);
+    gtk_image_set_from_pixbuf( GTK_IMAGE(portrait), dst);
+
     gtk_widget_show_all(window_list);
-    printf("buttons1 end");
 }
 
 void buttons2_clicked(){
-    printf("buttons2 begin");
     GdkPixbuf *src = gdk_pixbuf_new_from_file("../client/images/list_portrait/2.png", NULL);
     gtk_image_set_from_pixbuf( GTK_IMAGE(image_usericon), src);
+
+    src = gdk_pixbuf_new_from_file("../client/images/list_portrait/2.png", NULL);
+    GdkPixbuf * dst = gdk_pixbuf_scale_simple(src,
+                                              150, 150, GDK_INTERP_BILINEAR);
+    gtk_image_set_from_pixbuf( GTK_IMAGE(portrait), dst);
+
     gtk_widget_show_all(window_list);
 }
 
 void buttons3_clicked(){
-    printf("buttons3 begin");
     GdkPixbuf *src = gdk_pixbuf_new_from_file("../client/images/list_portrait/3.png", NULL);
     gtk_image_set_from_pixbuf( GTK_IMAGE(image_usericon), src);
+
+    src = gdk_pixbuf_new_from_file("../client/images/list_portrait/3.png", NULL);
+    GdkPixbuf * dst = gdk_pixbuf_scale_simple(src,
+                                              150, 150, GDK_INTERP_BILINEAR);
+    gtk_image_set_from_pixbuf( GTK_IMAGE(portrait), dst);
+
     gtk_widget_show_all(window_list);
 }
 
 void buttons4_clicked(){
-    printf("buttons4 begin");
     GdkPixbuf *src = gdk_pixbuf_new_from_file("../client/images/list_portrait/4.png", NULL);
     gtk_image_set_from_pixbuf( GTK_IMAGE(image_usericon), src);
+
+    src = gdk_pixbuf_new_from_file("../client/images/list_portrait/4.png", NULL);
+    GdkPixbuf * dst = gdk_pixbuf_scale_simple(src,
+                                              150, 150, GDK_INTERP_BILINEAR);
+    gtk_image_set_from_pixbuf( GTK_IMAGE(portrait), dst);
+
     gtk_widget_show_all(window_list);
 }
 
 void buttons5_clicked(){
-    printf("buttons5 begin");
     GdkPixbuf *src = gdk_pixbuf_new_from_file("../client/images/list_portrait/5.png", NULL);
     gtk_image_set_from_pixbuf( GTK_IMAGE(image_usericon), src);
+
+    src = gdk_pixbuf_new_from_file("../client/images/list_portrait/5.png", NULL);
+    GdkPixbuf * dst = gdk_pixbuf_scale_simple(src,
+                                              150, 150, GDK_INTERP_BILINEAR);
+    gtk_image_set_from_pixbuf( GTK_IMAGE(portrait), dst);
+
     gtk_widget_show_all(window_list);
 }
 
 void buttons6_clicked(){
-    printf("buttons6 begin");
     GdkPixbuf *src = gdk_pixbuf_new_from_file("../client/images/list_portrait/6.png", NULL);
     gtk_image_set_from_pixbuf( GTK_IMAGE(image_usericon), src);
+
+    src = gdk_pixbuf_new_from_file("../client/images/list_portrait/6.png", NULL);
+    GdkPixbuf * dst = gdk_pixbuf_scale_simple(src,
+                                              150, 150, GDK_INTERP_BILINEAR);
+    gtk_image_set_from_pixbuf( GTK_IMAGE(portrait), dst);
+
     gtk_widget_show_all(window_list);
 }
 
 void buttons7_clicked(){
-    printf("buttons7 begin");
     GdkPixbuf *src = gdk_pixbuf_new_from_file("../client/images/list_portrait/7.png", NULL);
     gtk_image_set_from_pixbuf( GTK_IMAGE(image_usericon), src);
+
+    src = gdk_pixbuf_new_from_file("../client/images/list_portrait/7.png", NULL);
+    GdkPixbuf * dst = gdk_pixbuf_scale_simple(src,
+                                              150, 150, GDK_INTERP_BILINEAR);
+    gtk_image_set_from_pixbuf( GTK_IMAGE(portrait), dst);
+
     gtk_widget_show_all(window_list);
 }
 
 void buttons8_clicked(){
-    printf("buttons8 begin");
     GdkPixbuf *src = gdk_pixbuf_new_from_file("../client/images/list_portrait/8.png", NULL);
     gtk_image_set_from_pixbuf( GTK_IMAGE(image_usericon), src);
+
+    src = gdk_pixbuf_new_from_file("../client/images/list_portrait/8.png", NULL);
+    GdkPixbuf * dst = gdk_pixbuf_scale_simple(src,
+                                              150, 150, GDK_INTERP_BILINEAR);
+    gtk_image_set_from_pixbuf( GTK_IMAGE(portrait), dst);
+
     gtk_widget_show_all(window_list);
 }
 
 void buttons9_clicked(){
-    printf("buttons9 begin");
     GdkPixbuf *src = gdk_pixbuf_new_from_file("../client/images/list_portrait/9.png", NULL);
     gtk_image_set_from_pixbuf( GTK_IMAGE(image_usericon), src);
+
+    src = gdk_pixbuf_new_from_file("../client/images/list_portrait/9.png", NULL);
+    GdkPixbuf * dst = gdk_pixbuf_scale_simple(src,
+                                              150, 150, GDK_INTERP_BILINEAR);
+    gtk_image_set_from_pixbuf( GTK_IMAGE(portrait), dst);
+
     gtk_widget_show_all(window_list);
 }
 
@@ -172,7 +217,10 @@ GtkWidget *select_portrait()
 
     gtk_container_add(GTK_CONTAINER(window), table);
 
+    update_widget_bg(window,700, 700, "../client/images/bg/7.jpg");
+
     gtk_widget_show_all(window);
+
 
 
     gtk_main();

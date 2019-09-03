@@ -39,14 +39,23 @@ GtkWidget *group_information_frame()
     gtk_container_add(frame, table);
     gtk_frame_set_label(frame, "Information");
     image = gtk_image_new_from_file(default_group_image_path);
-    gtk_table_attach_defaults(GTK_TABLE(table),image, 0, 5, 0, 5);
+    gtk_table_attach_defaults(GTK_TABLE(table),image, 0, 4, 0, 5);
     id = gtk_label_new(default_group_id);
     user_name = gtk_label_new(default_group_name);
-    gtk_table_attach_defaults(GTK_TABLE(table), id, 5, 10, 0, 3);
-    gtk_table_attach_defaults(GTK_TABLE(table), user_name, 5, 10, 3, 5);
+
+    PangoFontDescription *font_desc = pango_font_description_from_string ("Serif 15");
+    pango_font_description_set_size (font_desc, 20 * PANGO_SCALE);
+
+    gtk_widget_modify_font (id, font_desc);
+    gtk_widget_modify_font (user_name, font_desc);
+    pango_font_description_free (font_desc);
+
+    gtk_table_attach_defaults(GTK_TABLE(table), id, 3, 10, 0, 3);
+    gtk_table_attach_defaults(GTK_TABLE(table), user_name, 3, 10, 3, 6);
 
     button = create_button("../client/images/add.png", "添加");
-    gtk_table_attach_defaults(GTK_TABLE(table), button, 5, 7, 9, 12);
+    gtk_button_set_relief(button, GTK_RELIEF_NONE);
+    gtk_table_attach_defaults(GTK_TABLE(table), button, 4, 8, 7, 13);
 
     return frame;
 }
@@ -83,6 +92,7 @@ GtkWidget *add_groups()
     gtk_table_attach_defaults(GTK_TABLE(table),button_search, 17, 19, 2, 4);
     g_signal_connect ( button_search, "clicked",
                        G_CALLBACK (search_group), NULL);
+    gtk_button_set_relief(button_search, GTK_RELIEF_NONE);
 
     frame = group_information_frame();
     gtk_table_attach_defaults(GTK_TABLE(table),frame, 2, 18, 6, 18);

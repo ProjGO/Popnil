@@ -10,6 +10,7 @@
 
 
 extern GtkWidget * sign();
+extern GtkWidget * change_password();
 extern void list();
 //const char password[MAX_PWD_LEN] = "secret";
 extern int fd_log,fd_chat,fd_file;
@@ -78,7 +79,7 @@ int login (int argc, char *argv[])
                        G_CALLBACK (gtk_main_quit), NULL);	//为窗口连接“退出事件”
 
     sign_button = gtk_button_new_with_label("注册账号");
-    retrieve_button = gtk_button_new_with_label("找回密码");
+    retrieve_button = gtk_button_new_with_label("修改密码");
 
 
 
@@ -102,7 +103,8 @@ int login (int argc, char *argv[])
     g_signal_connect ( sign_button, "clicked",
                        G_CALLBACK (sign), NULL);
 
-
+    g_signal_connect ( retrieve_button, "clicked",
+                       G_CALLBACK (change_password), NULL);
 
     hbox = gtk_hbox_new ( TRUE, 1 );
     vbox = gtk_vbox_new ( FALSE, 1);		//创建vbox
