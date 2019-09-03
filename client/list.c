@@ -1,5 +1,6 @@
 #include <gtk/gtk.h>
 #include <string.h>
+#include "../common/include/define.h"
 
 //extern local_user_info;
 extern GtkWidget *add_friends();
@@ -7,6 +8,9 @@ extern GtkWidget *add_groups();
 extern GtkWidget *chat();
 extern GtkWidget *group_chat();
 extern GtkWidget *setting();
+extern int usr_id;
+extern int fd_log,fd_chat,fd_file;
+extern rio_t rio_log, rio_chat, rio_file;
 extern void update_widget_bg(GtkWidget *widget, int w,int h, const gchar *img_file);
 GtkWidget *image_usericon;
 GtkWidget *window_list;
@@ -14,6 +18,35 @@ GtkWidget *window_list;
 ////好友(群组)列表的个数max & 每个列表中好友(群组)的个数max
 #define MAX_LIST_NUM 100
 #define MAX_LIST_FRIEND_GROUP_NUM 100
+
+
+general_array update_friend_info_c(rio_t *rio_log, int fd_log)
+{
+    OP_TYPE type = UPDATE;
+    int friend_num = 0;
+    client_info my_info;
+    general_array friend_info_array;
+    rio_writen(fd_log, &type, sizeof(OP_TYPE)); // 向服务器发送请求同步的op
+    rio_writen(fd_log, &usr_id, sizeof(int)); // 发送自己的id
+
+    read(fd_log, &my_info, sizeof(client_info));
+    //----------------------------------------------------------
+    //在客户端中更新显示本人头像、昵称等
+    //----------------------------------------------------------
+
+    read(fd_log, &friend_num, sizeof(int)); // 从服务器接收有几个好友
+    friend_info_array.num = friend_num;
+    friend_info_array.data = malloc(friend_num * sizeof(client_info)); // 申请内存
+    for(int i = 0; i < friend_num; i++)
+    {
+        //read(fd_log, &((client_info *)friend_info_array.data)[i], sizeof(client_info)); // 填进去
+        rio_readnb(rio_log, &((client_info *)friend_info_array.data)[i], sizeof(client_info));
+        printf("%d : %d\n",i,((client_info *)friend_info_array.data)[i].id);
+    }
+
+    return friend_info_array;
+}
+
 
 //记录每个好友和群组的信息
 struct  friend_and_group
@@ -147,7 +180,7 @@ void init_friend_group_list()
  */
 void add_list_friends(GtkWidget* page, const char* list_name, const char* friend_name, const char* image)
 {
-    int i, j;
+    int i;
     //先找有无该列表
     int flag = 0;
     for(i = 1; i < MAX_LIST_NUM; i++)
@@ -180,7 +213,7 @@ void add_list_friends(GtkWidget* page, const char* list_name, const char* friend
     {
         //需要新建列表
         for (i = 1; i < MAX_LIST_NUM; i++) {
-            if (group[i][0].friend_group_num == 0)
+            if (friend[i][0].friend_group_num == 0)
             {
                 break;
             }
@@ -367,13 +400,23 @@ void list()
     add_list_friends(page_friend_vbox, "my friend", "lalalal", "../client/images/emoji.png");
     add_list_friends(page_friend_vbox, "我的同学", "xdx", "../client/images/emoji.png");
     add_list_friends(page_friend_vbox, "我的同学", "666", "../client/images/emoji.png");
+    add_list_friends(page_friend_vbox, "my friend", "hhahalal", "../client/images/emoji.png");
 
     add_list_groups(page_group_vbox, "my friend", "liuzhen", "../client/images/emoji.png");
     add_list_groups(page_group_vbox, "my friend", "lalalal", "../client/images/emoji.png");
     add_list_groups(page_group_vbox, "我的同学", "xdx", "../client/images/emoji.png");
     add_list_groups(page_group_vbox, "我的同学", "666", "../client/images/emoji.png");
 
-
+    //////zzk
+    general_array friendlist;
+    friendlist = update_friend_info_c(&rio_log,fd_log);
+//    GtkWidget* my_friend_vbox =add_list(page_friend_vbox, "我的好友");
+    client_info * tem = (client_info*) friendlist.data;
+    for(int i=0;i<friendlist.num;i++)
+    {//zzk change
+        add_list_friends(page_friend_vbox, "my friend", tem[i].nickname ,"../client/images/emoji.png");
+//        add_friend_group(my_friend_vbox,tem[i].nickname , "../client/images/emoji.png");
+    }
     //add_list_groups("我的群组", "hahahqun", "../image.png");
 
 

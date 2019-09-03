@@ -13,6 +13,8 @@ extern GtkWidget * sign();
 extern void list();
 //const char password[MAX_PWD_LEN] = "secret";
 extern int fd_log,fd_chat,fd_file;
+extern rio_t rio_log, rio_chat, rio_file;
+extern usr_id;
 GtkWidget *username_entry, *password_entry;
 GtkWidget *window_login;
 void button_clicked (GtkWidget *window, gpointer data)
@@ -43,8 +45,12 @@ void button_clicked (GtkWidget *window, gpointer data)
         read(fd_log,msg, sizeof(response_s2c));
         if(msg->return_val)
         {
+            usr_id=info->id;
             fd_chat = open_clientfd_old(DEFAULT_IP,DEFAULT_PORT);
             fd_file = open_clientfd_old(DEFAULT_IP,DEFAULT_PORT);
+            rio_readinitb(&rio_chat, fd_chat);
+            rio_readinitb(&rio_log, fd_log);
+            rio_readinitb(&rio_file, fd_file);
             g_signal_connect ( window, "destroy",
                                G_CALLBACK (gtk_main_quit), NULL);
             gtk_widget_destroy(window_login);
