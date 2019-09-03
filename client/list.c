@@ -221,6 +221,7 @@ void add_list_friends(GtkWidget* page, const char* list_name, const char* friend
         friend[i][0].friend_group_num = 1;
         strcpy(friend[i][0].list_name, list_name);
         strcpy(friend[i][1].number_name, friend_name);
+        friend[i][1].is_empty = FALSE;
         //将好友添加到界面中
 //        GtkWidget* vbox = add_list(page, list_name);
         friend[i][0].vbox = add_list(page, list_name);
@@ -276,6 +277,7 @@ void add_list_groups(GtkWidget* page, const char* list_name, const char* group_n
         group[i][0].friend_group_num = 1;
         strcpy(group[i][0].list_name, list_name);
         strcpy(group[i][1].number_name, group_name);
+        group[i][1].is_empty = FALSE;
         //将好友添加到界面中
 //        GtkWidget* vbox = add_list(page, list_name);
         group[i][0].vbox = add_list(page, list_name);
