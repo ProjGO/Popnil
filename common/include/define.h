@@ -12,6 +12,7 @@
 #define MAX_NAME_LEN 32
 #define MAX_PWD_LEN 512
 #define MAX_MSG_LEN 512
+#define MAX_USR_NUM 100
 #define MAX_PIC_SIZE (1024*1024*3)
 #define DEFAULT_PORT 8088
 #define DEFAULT_IP "127.0.0.1"

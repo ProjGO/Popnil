@@ -11,10 +11,13 @@ int operate_friend(oper_friend_info * s)
     //将两者id存入数据库
     switch(s->type)
     {
-        case SEARCH_FRIEND:
+        case SEARCH_FRIEND: //查找好友
         {
             client_info* c=(client_info*)malloc(sizeof(client_info));
-
+            *c=getuser(s->id_re);
+            write(s->fd_app,c,sizeof(client_info));
+            free(c);
+            return 1;
         }
         case ADD_FRIEND:return(addfriendship(s->id_app,s->id_re));
         case DELETE_FRIEND:return(deletefriendship(s->id_app,s->id_re));
