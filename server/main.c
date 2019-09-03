@@ -223,7 +223,7 @@ int main(int argc, char **argv)
                     rio_readnb(&newclient, &user_id, sizeof(int)); // 从客户端接收用户id
                     client_info user_info = getuser(user_id); // 获取用户本人的信息
                     rio_writen(fd_log, &user_info, sizeof(client_info)); // 发送用户本人信息
-                    
+
                     general_array related_ids_array = listfriendship(user_id); // 获取用户好友及群的信息
                     int related_ids_num = related_ids_array.num;
                     int *related_ids = (int*)related_ids_array.data;

@@ -126,7 +126,7 @@ GtkWidget *add_friends()
     gtk_table_set_col_spacings(GTK_TABLE(table),1);
     gtk_container_add(GTK_CONTAINER(window),table);
 
-    search_entry = gtk_search_entry_new();
+    search_entry = gtk_entry_new();
     gtk_table_attach_defaults(GTK_TABLE(table),search_entry, 2, 16, 2, 4);
 //    search_friends();
     button_search = create_button("../client/images/search.png", NULL);

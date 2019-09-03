@@ -34,7 +34,7 @@ general_array update_friend_info_c(rio_t *rio_log, int fd_log)
     general_array friend_info_array;
     rio_writen(fd_log, &type, sizeof(OP_TYPE)); // 向服务器发送请求同步的op
     rio_writen(fd_log, &usr_id, sizeof(int)); // 发送自己的id
-    
+
     read(fd_log, &my_info, sizeof(client_info));
     //----------------------------------------------------------
     //在客户端中更新显示本人头像、昵称等
