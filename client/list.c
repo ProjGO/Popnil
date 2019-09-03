@@ -1,15 +1,42 @@
 #include <gtk/gtk.h>
-
+#include "../common/include/database.h"
+#include "../common/include/include.h"
 
 //extern local_user_info;
 extern GtkWidget *add_friends();
 extern GtkWidget *chat();
 extern GtkWidget *setting();
+extern int fd_log,fd_chat,fd_file;
+extern rio_t rio_log, rio_char, rio_file;
+
 /**添加一个好友列表或其群组列表
  * page 好友界面&群组界面
  * str 列表的名字
  * 返回vbox来添加好友或群组
  */
+general_array update_friend_info_c(rio_t *rio_log, int fd_log)
+{
+    OP_TYPE type = UPDATE;
+    int friend_num = 0;
+    client_info my_info;
+    general_array friend_info_array;
+    int id = 4;
+    rio_writen(fd_log, &type, sizeof(OP_TYPE)); // 向服务器发送请求同步的op
+    rio_writen(fd_log, &id, sizeof(int)); // 发送自己的id
+    
+    read(fd_log, &my_info, sizeof(client_info));
+    //----------------------------------------------------------
+    //在客户端中更新显示本人头像、昵称等
+    //----------------------------------------------------------
+    
+    read(fd_log, &friend_num, sizeof(int)); // 从服务器接收有几个好友
+    friend_info_array.num = friend_num;
+    friend_info_array.data = malloc(sizeof(friend_info)); // 申请内存
+    for(int i = 0; i < friend_num; i++)
+        rio_readnb(rio_log, &friend_info_array.data[i], sizeof(friend_info)); // 填进去
+    return friend_info_array;
+}
+
 //GtkWidget* add_list(GtkWidget *page, GtkWidget* vbox, const char *str)
 GtkWidget* add_list(GtkWidget *page, const char *str)
 {
@@ -151,8 +178,16 @@ void list()
     gtk_table_attach_defaults(GTK_TABLE(table), button_add_friends, 0, 16, 37, 40);
     //g_signal_connect(button_add_friends, "clicked", G_CALLBACK(add_friends), NULL);
 
+    //////zzk
+    rio_t rio_log;
+    general_array friendlist;
+    friendlist = update_friend_info_c(&rio_log,fd_log);
     GtkWidget* my_friend_vbox =add_list(page_friend_vbox, "我的好友");
-    add_friend_group(my_friend_vbox, "lalalala", "../client/images/emoji.png");
+    client_info * tem = (client_info*) friendlist.data;
+    for(int i=0;i<friendlist.num;i++)
+    {
+        add_friend_group(my_friend_vbox, tem[i].nickname, "../client/images/emoji.png");
+    }
 
 
 

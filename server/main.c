@@ -107,7 +107,7 @@ int main(int argc, char **argv)
             fd_log=check_clients(&pool_log);
             rio_t newclient;
             rio_readinitb(&newclient,fd_log);
-            rio_readlineb(&newclient,&op,sizeof(OP_TYPE));
+            rio_readnb(&newclient,&op,sizeof(OP_TYPE));
             switch (op)
             {
                 case SEARCH_FRIEND://查找好友
@@ -215,6 +215,28 @@ int main(int argc, char **argv)
                     free(s);
                     break;
                 }
+                case UPDATE: // 拉取好友信息
+                {
+                    int user_id;
+                    client_info cur_friend_info;
+                    rio_readnb(&newclient, &user_id, sizeof(int)); // 从客户端接收用户id
+                    client_info user_info = getuser(user_id); // 获取用户本人的信息
+                    rio_writen(fd_log, &user_info, sizeof(client_info)); // 发送用户本人信息
+                    
+                    general_array related_ids_array = listfriendship(user_id); // 获取用户好友及群的信息
+                    int related_ids_num = related_ids_array.num;
+                    int *related_ids = (int*)related_ids_array.data;
+                    rio_writen(fd_log, &related_ids_num, sizeof(int)); // 告诉客户端有几个要传
+                    for(int i = 0; i < related_ids_num; i++)
+                    {
+                        ///zzk changed
+                        cur_friend_info.id = related_ids[i];
+                        client_info tem;
+                        tem = getuser(cur_friend_info.id);
+                        rio_writen(fd_log,&tem, sizeof(client_info));
+                        //向客户端逐条发好友信息
+                    }
+                }
             }
         }
     }
@@ -266,16 +288,8 @@ int check_clients(pool *p)
     for(i = 0; (i <= p->maxi) && (p->nready > 0); i++)
     {
         connfd = p->clientfd[i];
-        rio = p->clientrio[i];
-
         if((connfd > 0) && (FD_ISSET(connfd, &p->ready_set)))
-        {
-            p->nready--;
-            if((n=rio_readlineb(&rio, buf, 1024)) != 0)
-            {
-                return connfd;
-            }
-        }
+            return connfd;
     }
 }
 
