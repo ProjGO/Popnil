@@ -20,7 +20,7 @@ general_array update_friend_info_c(rio_t *rio_log, int fd_log)
     int friend_num = 0;
     client_info my_info;
     general_array friend_info_array;
-    int id = 4;
+    int id = 5;
     rio_writen(fd_log, &type, sizeof(OP_TYPE)); // 向服务器发送请求同步的op
     rio_writen(fd_log, &id, sizeof(int)); // 发送自己的id
     
@@ -31,9 +31,14 @@ general_array update_friend_info_c(rio_t *rio_log, int fd_log)
     
     read(fd_log, &friend_num, sizeof(int)); // 从服务器接收有几个好友
     friend_info_array.num = friend_num;
-    friend_info_array.data = malloc(sizeof(friend_info)); // 申请内存
+    friend_info_array.data = malloc(friend_num * sizeof(client_info)); // 申请内存
     for(int i = 0; i < friend_num; i++)
-        rio_readnb(rio_log, &friend_info_array.data[i], sizeof(friend_info)); // 填进去
+    {
+        //read(fd_log, &((client_info *)friend_info_array.data)[i], sizeof(client_info)); // 填进去
+        rio_readnb(rio_log, &((client_info *)friend_info_array.data)[i], sizeof(client_info));
+        printf("%d : %d\n",i,((client_info *)friend_info_array.data)[i].id);
+    }
+
     return friend_info_array;
 }
 
@@ -99,7 +104,9 @@ void add_friend_group(GtkWidget* vbox, const char *str, const char *image_path)
 
 
     filemenu = gtk_menu_new();
-    menuitem = gtk_image_menu_item_new_from_stock("删除好友", accel_group);
+    ///////////////////////////////////////////////
+    //menuitem = gtk_image_menu_item_new_from_stock("删除好友", accel_group);
+    ///////////////////////////////////////////////
     gtk_menu_shell_append(GTK_MENU_SHELL(filemenu), menuitem);
     gtk_widget_show(menuitem);
 
@@ -227,14 +234,14 @@ void list()
     g_signal_connect(button_add_friends, "clicked", G_CALLBACK(add_friends), NULL);
 
     //////zzk
-    rio_t rio_log;
     general_array friendlist;
     friendlist = update_friend_info_c(&rio_log,fd_log);
     GtkWidget* my_friend_vbox =add_list(page_friend_vbox, "我的好友");
     client_info * tem = (client_info*) friendlist.data;
     for(int i=0;i<friendlist.num;i++)
-    {
-        add_friend_group(my_friend_vbox, tem[i].nickname, "../client/images/emoji.png");
+    {//zzk change
+
+        add_friend_group(my_friend_vbox,tem[i].nickname , "../client/images/emoji.png");
     }
 
 

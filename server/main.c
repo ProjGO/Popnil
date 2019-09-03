@@ -221,19 +221,19 @@ int main(int argc, char **argv)
                     client_info cur_friend_info;
                     rio_readnb(&newclient, &user_id, sizeof(int)); // 从客户端接收用户id
                     client_info user_info = getuser(user_id); // 获取用户本人的信息
-                    rio_writen(fd_log, &user_info, sizeof(client_info)); // 发送用户本人信息
+                    write(fd_log, &user_info, sizeof(client_info)); // 发送用户本人信息
                     
                     general_array related_ids_array = listfriendship(user_id); // 获取用户好友及群的信息
                     int related_ids_num = related_ids_array.num;
                     int *related_ids = (int*)related_ids_array.data;
-                    rio_writen(fd_log, &related_ids_num, sizeof(int)); // 告诉客户端有几个要传
+                    write(fd_log, &related_ids_num, sizeof(int)); // 告诉客户端有几个要传
                     for(int i = 0; i < related_ids_num; i++)
                     {
                         ///zzk changed
                         cur_friend_info.id = related_ids[i];
                         client_info tem;
                         tem = getuser(cur_friend_info.id);
-                        rio_writen(fd_log,&tem, sizeof(client_info));
+                        write(fd_log,&tem, sizeof(client_info));
                         //向客户端逐条发好友信息
                     }
                 }

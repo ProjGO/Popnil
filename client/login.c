@@ -13,6 +13,7 @@ extern GtkWidget * sign();
 extern void list();
 //const char password[MAX_PWD_LEN] = "secret";
 extern int fd_log,fd_chat,fd_file;
+extern rio_t rio_log, rio_chat, rio_file;
 
 GtkWidget *username_entry, *password_entry;
 void button_clicked (GtkWidget *window, gpointer data)
@@ -47,6 +48,9 @@ void button_clicked (GtkWidget *window, gpointer data)
             fd_file = open_clientfd_old(DEFAULT_IP,DEFAULT_PORT);
             g_signal_connect ( window, "destroy",
                                G_CALLBACK (gtk_main_quit), NULL);
+            rio_readinitb(&rio_log, fd_log);
+            rio_readinitb(&rio_chat, fd_chat);
+            rio_readinitb(&rio_file, fd_file);
             list();
 
         }
