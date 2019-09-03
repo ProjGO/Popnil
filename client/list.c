@@ -5,6 +5,7 @@
 extern GtkWidget *add_friends();
 extern GtkWidget *chat();
 extern GtkWidget *setting();
+GtkWidget* my_friend_vbox;
 /**添加一个好友列表或其群组列表
  * page 好友界面&群组界面
  * str 列表的名字
@@ -60,6 +61,12 @@ static gint my_popup_handler (GtkWidget *widget, GdkEvent *event)
     }
     return FALSE;
 }
+
+void remove_friend_group(GtkWidget* button)
+{
+    gtk_container_remove(my_friend_vbox, button);
+}
+
 void add_friend_group(GtkWidget* vbox, const char *str, const char *image_path)
 {
     GtkWidget* button = gtk_button_new();
@@ -74,6 +81,10 @@ void add_friend_group(GtkWidget* vbox, const char *str, const char *image_path)
     filemenu = gtk_menu_new();
     menuitem = gtk_image_menu_item_new_from_stock("删除好友", accel_group);
     gtk_menu_shell_append(GTK_MENU_SHELL(filemenu), menuitem);
+
+    ////////////////
+    g_signal_connect(GTK_MENU_ITEM(menuitem),"activate",G_CALLBACK(remove_friend_group),button);
+
     gtk_widget_show(menuitem);
 
 //    gtk_menu_item_set_submenu(GTK_MENU_ITEM(rootmenu),filemenu);
@@ -88,12 +99,9 @@ void add_friend_group(GtkWidget* vbox, const char *str, const char *image_path)
     gtk_box_pack_start(GTK_BOX(hbox), image, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(hbox), name_label, TRUE, TRUE, 0);
 
+    g_signal_connect_swapped(G_OBJECT(menuitem), "activate", G_CALLBACK(remove_friend_group), button);
 }
 
-void remove_friend_group(GtkWidget* container)
-{
-
-}
 
 GtkWidget* create_button(char *image_path, char *button_label)
 {
@@ -199,10 +207,10 @@ void list()
     gtk_table_attach_defaults(GTK_TABLE(table), button_add_friends, 0, 16, 37, 40);
     g_signal_connect(button_add_friends, "clicked", G_CALLBACK(add_friends), NULL);
 
-    GtkWidget* my_friend_vbox =add_list(page_friend_vbox, "我的好友");
+    my_friend_vbox =add_list(page_friend_vbox, "我的好友");
     add_friend_group(my_friend_vbox, "lalalala", "../client/images/emoji.png");
-
-
+    add_friend_group(my_friend_vbox, "kalalala", "../client/images/emoji.png");
+    add_friend_group(my_friend_vbox, "jalalala", "../client/images/emoji.png");
 
     gtk_widget_show_all(window);
     gtk_main();
