@@ -31,7 +31,7 @@ general_array listfriendship (const int id);
 bool deletefriendship (const int idA, const int idB);
 
 bool addmembership (const int gid, const int uid);
-bool setpermission (const int gid, const int uid, const Permission permission)
+bool setpermission (const int gid, const int uid, const Permission permission);
 general_array listmembership (const int id);
 bool deletemembership (const int gid, const int uid);
 
