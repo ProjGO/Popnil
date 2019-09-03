@@ -9,12 +9,12 @@
 #include "../common/include/define.h"
 
 extern GtkWidget * sign_success(char * userid);
-GtkWidget *nickname_entry, *password_entry;
+GtkWidget *nickname_entry, *reg_password_entry;
 int sign_clicked (GtkWidget *window, gpointer data)
 {
     reg_info_c2s *reg_text=(reg_info_c2s*)malloc(sizeof(reg_info_c2s));
     strcpy(reg_text->name,gtk_entry_get_text(GTK_ENTRY((GtkWidget *) nickname_entry)));
-    strcpy(reg_text->pwd,gtk_entry_get_text(GTK_ENTRY((GtkWidget *) password_entry)));
+    strcpy(reg_text->pwd,gtk_entry_get_text(GTK_ENTRY((GtkWidget *) reg_password_entry)));
     unsigned long len = strlen(reg_text->pwd);
 //    printf("hahah\n");
     if(len >= 3 && len <=12)
@@ -54,6 +54,7 @@ int sign_clicked (GtkWidget *window, gpointer data)
         close(socketfd);
         char str[10];
         sprintf(str, "%d", msg->return_val);
+        gtk_widget_destroy(window);
         sign_success(str);
         free(msg);
     }
@@ -62,7 +63,7 @@ int sign_clicked (GtkWidget *window, gpointer data)
         printf("密码必长度必须大于三小于12!");
     }
 
-    return 0;
+//    return 0;
 }
 
 GtkWidget * sign()
@@ -92,9 +93,9 @@ GtkWidget * sign()
             "<span foreground='white'  font_desc='20'>Password:</span>");
 
     nickname_entry = gtk_entry_new();
-    password_entry = gtk_entry_new();
+    reg_password_entry = gtk_entry_new();
 
-    gtk_entry_set_visibility(GTK_ENTRY (password_entry), FALSE);
+    gtk_entry_set_visibility(GTK_ENTRY (reg_password_entry), FALSE);
 
     sign_ok_button = gtk_button_new_with_label("注册");
 
@@ -114,7 +115,7 @@ GtkWidget * sign()
     gtk_box_pack_start(GTK_BOX(hbox1), nickname_entry, TRUE, FALSE, 1);	//将nickname标签添加到hbox1中
 
     gtk_box_pack_start(GTK_BOX(hbox2), password_label, TRUE, FALSE, 1);	//将password编辑框添加到hbox2中
-    gtk_box_pack_start(GTK_BOX(hbox2), password_entry, TRUE, FALSE, 1);	//将password标签添加到hbox2中
+    gtk_box_pack_start(GTK_BOX(hbox2), reg_password_entry, TRUE, FALSE, 1);	//将password标签添加到hbox2中
 
     gtk_box_pack_start(GTK_BOX(vbox), hbox1, TRUE, FALSE, 1);
     gtk_box_pack_start(GTK_BOX(vbox), hbox2, TRUE, FALSE, 1);
