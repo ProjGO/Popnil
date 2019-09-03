@@ -15,6 +15,8 @@ extern void list();
 extern int fd_log,fd_chat,fd_file;
 extern rio_t rio_log, rio_chat, rio_file;
 
+extern int usr_id;
+
 GtkWidget *username_entry, *password_entry;
 void button_clicked (GtkWidget *window, gpointer data)
 {
@@ -41,9 +43,10 @@ void button_clicked (GtkWidget *window, gpointer data)
             exit(1);
         }
         response_s2c *msg = (response_s2c*)malloc(sizeof(response_s2c));
-       read(fd_log,msg, sizeof(response_s2c));
+        read(fd_log, msg, sizeof(response_s2c));
         if(msg->return_val)
         {
+            usr_id = info->id;
             fd_chat = open_clientfd_old(DEFAULT_IP,DEFAULT_PORT);
             fd_file = open_clientfd_old(DEFAULT_IP,DEFAULT_PORT);
             g_signal_connect ( window, "destroy",
