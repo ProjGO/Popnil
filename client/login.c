@@ -72,6 +72,12 @@ int login (int argc, char *argv[])
     GtkWidget *hbox, *vbox, *vbox1, *vbox2;
     GtkWidget *frame;
 
+//    if ( !g_thread_supported() )   //判断线程有没有初始化过
+//    {
+//        g_thread_init(NULL);
+//        gdk_threads_init();
+//    }
+
 
     gtk_init(&argc, &argv);
 
@@ -96,9 +102,11 @@ int login (int argc, char *argv[])
 
     ok_button = gtk_button_new_with_label("登录");		//设置“OK”按钮
 
+//    gdk_threads_enter();
+
     g_signal_connect (ok_button, "clicked",
                       G_CALLBACK(button_clicked), password_entry);	//为ok_button链接“单击事件”
-
+//    gdk_threads_leave;
 
     hbox0 = gtk_hbox_new ( TRUE, 1 );
     hbox1 = gtk_hbox_new ( TRUE, 1 );		//创建hbox1
@@ -147,7 +155,11 @@ int login (int argc, char *argv[])
 
 
     gtk_widget_show_all(window_login);	//show窗口
-    gtk_main ();
+
+
+//    gdk_threads_enter();
+    gtk_main();
+//    gdk_threads_leave();
 
     return 0;
 }

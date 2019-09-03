@@ -234,7 +234,7 @@ GtkWidget* chat(char *target_name, int* target_id)
     friend_portrait=gtk_image_new_from_file("../client/images/friend_portrait.png");
     gtk_container_add(GTK_CONTAINER(hbox1), friend_portrait);
 
-    friend_name_label = gtk_label_new(friend_name);
+    friend_name_label = gtk_label_new(target_name);
     gtk_container_add(GTK_CONTAINER(hbox1), friend_name_label);
 
     table_chat = gtk_table_new(1,1,TRUE);
