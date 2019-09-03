@@ -176,24 +176,13 @@ int addgroup (const int ownerid, const char name[])
 
 bool addfriendship (const int idA, const int idB)
 {
-  int idold, idnew;
-  if ( idA < idB )
-    {
-      idold = idA;
-      idnew = idB;
-    }
-  else
-    {
-      idold = idB;
-      idnew = idA;
-    }
   MYSQL *pconn;
   MYSQL_RES *res;
   bool suc = false;
   if ( (pconn= connect_db ()) != NULL )
     {
       char comm[1024] = "\0";
-      sprintf (comm, "select * from `friendship` where `idold` = %d and `idnew` = '%d';", idold, idnew);
+      sprintf (comm, "select * from `friendship` where (`idA` = %d and `idB` = '%d') or (`idA` = %d and `idB` = %d);", idA, idB, idB, idA);
       puts (comm);
       if ( !mysql_query (pconn, comm) )
         {
@@ -204,7 +193,7 @@ bool addfriendship (const int idA, const int idB)
             }
           else
             {
-              sprintf (comm, "insert into `friendship` values (%d, %d, curdate());", idold, idnew);
+              sprintf (comm, "insert into `friendship` values (%d, %d, curdate()), (%d, %d, curdate());", idA, idB, idB, idA);
               puts (comm);
               if ( !mysql_query (pconn, comm) )
                 {
@@ -230,49 +219,30 @@ bool addfriendship (const int idA, const int idB)
 general_array listfriendship (const int id)
 {
   MYSQL *pconn;
-  MYSQL_RES *resnew, *resold;
+  MYSQL_RES *res;
   MYSQL_ROW row;
-  int nold, nnew;
   general_array friends;
   friends.size = sizeof (int);
   if ( (pconn= connect_db ()) != NULL )
     {
       char comm[1024] = "\0";
-      sprintf (comm, "select `idold` from `friendship` where `idnew` = %d;", id);
+      sprintf (comm, "select `idB` from `friendship` where `idA` = %d;", id);
       puts (comm);
       if ( !mysql_query (pconn, comm) )
         {
-          resold = mysql_store_result (pconn);
-          nold = mysql_num_rows (resold);
-          sprintf (comm, "select `idnew` from `friendship` where `idold` = %d;", id);
-          puts (comm);
-          if ( !mysql_query (pconn, comm) )
+          res = mysql_store_result (pconn);
+          friends.num = mysql_num_rows (res);
+          friends.data = (int*)calloc (friends.num, friends.size);
+          for (int i = 0; i < friends.num ; i++)
             {
-              resnew = mysql_store_result (pconn);
-              nnew = mysql_num_rows (resnew);
-              friends.num = nold + nnew;
-              friends.data = (int*)calloc (friends.num, friends.size);
-              for (int i = 0; i < nold; i++)
-                {
-                  row = mysql_fetch_row (resold);
-                  ((int*)friends.data)[i] = atoi (row[0]);
-                }
-              for (int i = nold; i < friends.num ; i++)
-                {
-                  row = mysql_fetch_row (resnew);
-                  ((int*)friends.data)[i] = atoi (row[0]);
-                }
-              mysql_free_result (resold);
-              mysql_free_result (resnew);
+              row = mysql_fetch_row (res);
+              ((int*)friends.data)[i] = atoi (row[0]);
             }
-          else
-            {
-              fputs ("Failed to query while counting new friendships!\n", stderr);
-            }
+          mysql_free_result (res);
         }
       else
         {
-          fputs ("Failed to query while counting old friendships!\n", stderr);
+          fputs ("Failed to query while counting friendships!\n", stderr);
         }
     }
   mysql_close (pconn);
@@ -282,24 +252,13 @@ general_array listfriendship (const int id)
 
 bool deletefriendship (const int idA, const int idB)
 {
-  int idold, idnew;
-  if ( idA < idB )
-    {
-      idold = idA;
-      idnew = idB;
-    }
-  else
-    {
-      idold = idB;
-      idnew = idA;
-    }
   MYSQL *pconn;
   MYSQL_RES *res;
   bool suc = false;
   if ( (pconn= connect_db ()) != NULL )
     {
       char comm[1024] = "\0";
-      sprintf (comm, "select * from `friendship` where `idold` = %d and `idnew` = '%d';", idold, idnew);
+      sprintf (comm, "select * from `friendship` where (`idA` = %d and `idB` = '%d') or (`idA` = %d and `idB` = %d);", idA, idB, idB, idA);
       puts (comm);
       if ( !mysql_query (pconn, comm) )
         {
@@ -310,20 +269,20 @@ bool deletefriendship (const int idA, const int idB)
             }
           else
             {
-              sprintf (comm, "delete from `usermessage` where (`masterid` = %d and `goalid` = %d) or (`goalid` = %d and `masterid` = %d);", idold, idnew, idold, idnew);
+              sprintf (comm, "delete from `usermessage` where (`masterid` = %d and `goalid` = %d) or (`masterid` = %d and `goalid` = %d);", idA, idB, idB, idA);
               puts (comm);
               if ( !mysql_query (pconn, comm) )
                 {
-                  sprintf (comm, "delete from `friendship` where `idold` = %d and `idnew` = %d;", idold, idnew);
+                  sprintf (comm, "delete from `friendship` where (`idA` = %d and `idB` = '%d') or (`idA` = %d and `idB` = %d);", idA, idB, idB, idA);
                   puts (comm);
                   if ( !mysql_query (pconn, comm) )
                     {
                       suc = true;
                     }
                   else
-                  {
-                    fputs ("Failed to query while deleting friendships!\n", stderr);
-                  }
+                    {
+                      fputs ("Failed to query while deleting friendships!\n", stderr);
+                    }
                 }
               else
                 {
@@ -448,9 +407,9 @@ bool deletemembership (const int gid, const int uid)
                       suc = true;
                     }
                   else
-                  {
-                    fputs ("Failed to query while deleting memberships!\n", stderr);
-                  }
+                    {
+                      fputs ("Failed to query while deleting memberships!\n", stderr);
+                    }
                 }
               else
                 {
@@ -458,7 +417,7 @@ bool deletemembership (const int gid, const int uid)
                 }
             }
           mysql_free_result (res);
-       }
+        }
       else
         {
           fputs ("Failed to query while counting memberships!\n", stderr);
@@ -563,10 +522,10 @@ bool addgroupmessage (const time_t t, const int masterid, const int goalid, cons
 /*
 int main ()
 {
-  general_array ms = listmembership (0);
-  for (int i = 0; i < ms.num; i++)
+
+  if ( addfriendship (3, 0) == true )
     {
-      printf("%d\n", ((int*)ms.data)[i]);
+      deletefriendship (0, 3);
     }
   return 0;
 }

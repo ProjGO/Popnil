@@ -20,15 +20,22 @@ create table `groupinfo`
 	`name` varchar(32) default '' not null,
 	`anniversary` date not null
 );
+
 create table `friendship`
 (
-	`idold` int,
-	foreign key (`idold`) references `userinfo`(`id`),
-	`idnew` int,
-	foreign key (`idnew`) references `userinfo`(`id`),
-	check (`idold` < `idnew`),
-	primary key (`idold`, `idnew`),
+	`idA` int,
+	foreign key (`idA`) references `userinfo`(`id`),
+	`idB` int,
+	foreign key (`idB`) references `userinfo`(`id`),
+	primary key (`idA`, `idB`),
 	`anniversary` date not null
+);
+create table `tag`
+(
+	`masterid` int,
+	`goalid` int,
+	foreign key (`masterid`, `goalid`) references `friendship` (`idA`, `idB`),
+	`text` varchar(32) default '' not null
 );
 create table `membership`
 (
@@ -40,21 +47,20 @@ create table `membership`
 	`permission` int default 2 not null,
 	`anniversary` date not null
 );
+
 create table `usermessage`
 (
 	`time` timestamp not null,
 	`masterid` int,
-	foreign key (`masterid`) references `userinfo`(`id`),
 	`goalid` int,
-	foreign key (`goalid`) references `userinfo`(`id`),
+	foreign key (`masterid`, `goalid`) references `friendship` (`idA`, `idB`),
 	`text` varchar(1024) not null
 );
 create table `groupmessage`
 (
 	`time` timestamp not null,
 	`masterid` int,
-	foreign key (`masterid`) references `userinfo`(`id`),
 	`goalid` int,
-	foreign key (`goalid`) references `groupinfo`(`id`),
+	foreign key (`masterid`, `goalid`) references `membership` (`uid`, `gid`),
 	`text` varchar(1024) not null
 );
