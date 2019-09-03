@@ -8,7 +8,7 @@ extern GtkWidget *chat();
 extern GtkWidget *setting();
 extern int fd_log,fd_chat,fd_file;
 extern rio_t rio_log, rio_char, rio_file;
-
+extern int usr_id;
 /**添加一个好友列表或其群组列表
  * page 好友界面&群组界面
  * str 列表的名字
@@ -20,9 +20,8 @@ general_array update_friend_info_c(rio_t *rio_log, int fd_log)
     int friend_num = 0;
     client_info my_info;
     general_array friend_info_array;
-    int id = 5;
     rio_writen(fd_log, &type, sizeof(OP_TYPE)); // 向服务器发送请求同步的op
-    rio_writen(fd_log, &id, sizeof(int)); // 发送自己的id
+    rio_writen(fd_log, &usr_id, sizeof(int)); // 发送自己的id
     
     read(fd_log, &my_info, sizeof(client_info));
     //----------------------------------------------------------

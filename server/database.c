@@ -78,7 +78,7 @@ int adduser (const char nick[], const char passwd[])
         {
           res = mysql_store_result (pconn);
           id = mysql_num_rows (res);
-          sprintf (comm, "insert into `userinfo` values (%d, '%s', '%s', 0, '', curdate(), 0, 0);", id, passwd, nick);
+          sprintf (comm, "insert into `userinfo` values (%d, '%s', '%s', '1', null, null, null, null);", id, passwd, nick);
           puts ("comm");
           if ( mysql_query (pconn, comm) )
             {
@@ -119,12 +119,15 @@ client_info getuser (const int id)
           strcpy (ans.passwd, row[1]);
           strcpy (ans.nickname, row[2]);
           ans.avatar = atoi (row[3]);
+          if(row[4]!=NULL)
           strcpy (ans.bio, row[4]);
+          if(row[5]!=NULL)
           strcpy (ans.birthday, row[5]);
         }
       else
         {
           fputs ("Failed to query while getting user!\n", stderr);
+          ans.id=-1;//标识查无此人
         }
       mysql_close (pconn);
       free (pconn);
@@ -451,7 +454,7 @@ bool deletemembership (const int gid, const int uid)
                 }
               else
                 {
-                  fputs ("Failed to query while deleting memberships!\n", stderr);
+                  fputs ("Failed to query while deleting groupmessages!\n", stderr);
                 }
             }
           mysql_free_result (res);
@@ -557,6 +560,7 @@ bool addgroupmessage (const time_t t, const int masterid, const int goalid, cons
 }
 
 
+/*
 int main ()
 {
   general_array ms = listmembership (0);
@@ -566,4 +570,4 @@ int main ()
     }
   return 0;
 }
-
+*/
