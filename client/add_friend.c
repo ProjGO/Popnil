@@ -15,7 +15,34 @@ char* default_image_path = "../client/images/friend_portrait.png";
 char* default_id = "1120173454";
 char* default_name = "xdx";
 extern GtkWidget *create_button(char *image_path, char *button_label);
-
+void add()
+{
+    GtkWidget* dialog ;
+    GtkMessageType type ;
+    gchar *message;
+    message = "添加好友成功";
+    type = GTK_MESSAGE_INFO ;
+    dialog = gtk_message_dialog_new(NULL,
+                                    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, type ,
+            GTK_BUTTONS_OK,
+            message);
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+    oper_friend_info * msg=(oper_friend_info*)malloc(sizeof(oper_friend_info));
+    msg->id_re=atoi(gtk_label_get_text(id));
+    int flag=ADD_FRIEND;
+    if (write(fd_log, &flag, sizeof(int)) == -1 )
+    {
+        printf ("Error in send\n");
+        exit(1);
+    }
+    if (write(fd_log, msg, sizeof(oper_friend_info)) == -1 )
+    {
+        printf ("Error in send\n");
+        exit(1);
+    }
+    free(msg);
+}
 void search(GtkWidget *window, gpointer data)
 {
     oper_friend_info *id_text=(oper_friend_info*)malloc(sizeof(oper_friend_info));
@@ -38,7 +65,7 @@ void search(GtkWidget *window, gpointer data)
     read(fd_log,msg, sizeof(client_info));
     if(msg->id==-1)
     {
-
+        //显示查无此人
     }
     else
     {
@@ -74,6 +101,7 @@ GtkWidget *information_frame()
 
     button = create_button("../client/images/add.png", "添加");
     gtk_table_attach_defaults(GTK_TABLE(table), button, 5, 7, 9, 12);
+    g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(add), NULL);
 
     return frame;
 }

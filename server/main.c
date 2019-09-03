@@ -133,7 +133,7 @@ int main(int argc, char **argv)
                 case ADD_FRIEND: //添加好友
                 {
                     oper_friend_info * s=(oper_friend_info*)malloc(sizeof(oper_friend_info));
-                    rio_readlineb(&newclient,s,sizeof(s));
+                    rio_readlineb(&newclient,s,sizeof(oper_friend_info));
                     s->type=ADD_FRIEND;
                     s->id_app=check_id_log(fd_log);
                     if(operate_friend(s))
@@ -150,7 +150,7 @@ int main(int argc, char **argv)
                 case DELETE_FRIEND://删除好友
                 {
                     oper_friend_info * s=(oper_friend_info*)malloc(sizeof(oper_friend_info));
-                    rio_readlineb(&newclient,s,sizeof(s));
+                    rio_readlineb(&newclient,s,sizeof(oper_friend_info));
                     s->type=DELETE_FRIEND;
                     s->id_app=check_id_log(fd_log);
                     if(operate_friend(s))
@@ -167,7 +167,7 @@ int main(int argc, char **argv)
                 case ADD_GROUP://创建群组
                 {
                     oper_group_info * s=(oper_group_info*)malloc(sizeof(oper_group_info));
-                    rio_readlineb(&newclient,s,sizeof(s));
+                    rio_readlineb(&newclient,s,sizeof(oper_friend_info));
                     s->type=ADD_GROUP;
                     s->owner_id=check_id_log(fd_log);
                     if(operate_group(s))
@@ -185,7 +185,7 @@ int main(int argc, char **argv)
                 case JOIN_GROUP://加入群组
                 {
                     oper_group_info * s=(oper_group_info*)malloc(sizeof(oper_group_info));
-                    rio_readlineb(&newclient,s,sizeof(s));
+                    rio_readlineb(&newclient,s,sizeof(oper_friend_info));
                     s->type=JOIN_GROUP;
                     s->client_id=check_id_log(fd_log);
                     if(operate_group(s))
@@ -202,7 +202,7 @@ int main(int argc, char **argv)
                 case QUIT_GROUP://退出群组
                 {
                     oper_group_info * s=(oper_group_info*)malloc(sizeof(oper_group_info));
-                    rio_readlineb(&newclient,s,sizeof(s));
+                    rio_readlineb(&newclient,s,sizeof(oper_friend_info));
                     s->type=QUIT_GROUP;
                     s->client_id=check_id_log(fd_log);
                     if(operate_group(s))
