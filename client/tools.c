@@ -12,6 +12,7 @@ typedef struct _clist_link
     GtkWidget *label;		//将label放置在事件盒子中，用于显示文字
     GtkWidget *image;
     GtkWidget *name;
+    gint id;
     GtkWidget *table;
     struct _clist_link *next;
 }CListLink;
@@ -184,13 +185,16 @@ void sungtk_clist_set_position_in_fixed(SunGtkCList *clist, gint x, gint y)
 {
     gtk_fixed_move(GTK_FIXED(clist->fixed), clist->vbox, x, y);
 }
-int sungtk_clist_append(SunGtkCList *clist, const gchar *text, const gchar *image, const gchar* name)
+int sungtk_clist_append(SunGtkCList *clist, const gchar *text, const gchar *image, const gchar* name,const gint id)
 {
+
     if(clist==NULL || text==NULL)
         return -1;
     CListLink *temp = (CListLink *)malloc(sizeof(CListLink));
     if(temp==NULL)
         return -1;
+
+    temp->id = id;
 
     GtkWidget *img;
     img = gtk_image_new_from_file(image);
@@ -246,9 +250,9 @@ int sungtk_clist_append(SunGtkCList *clist, const gchar *text, const gchar *imag
     }
     pf->next = temp;
 
-
     return 0;
 }
+
 SunGtkCList *sungtk_clist_new()
 {
     SunGtkCList *clist = (SunGtkCList *)malloc(sizeof(SunGtkCList));
