@@ -259,11 +259,8 @@ general_array listfriendship (const int id)
                   row = mysql_fetch_row (resnew);
                   ((int*)friends.data)[i] = atoi (row[0]);
                 }
-              puts ("new");
               mysql_free_result (resold);
-              puts ("resold");
               mysql_free_result (resnew);
-              puts ("resnew");
             }
           else
             {
@@ -381,6 +378,41 @@ bool addmembership (const int gid, const int uid)
       free (pconn);
     }
   return suc;
+}
+
+general_array listmembership (const int gid)
+{
+  MYSQL *pconn;
+  MYSQL_RES *res;
+  MYSQL_ROW row;
+  general_array members;
+
+  members.size = sizeof (int);
+  if ( (pconn= connect_db ()) != NULL )
+    {
+      char comm[1024] = "\0";
+      sprintf (comm, "select `uid` from `membership` where `gid` = %d;", gid);
+      puts (comm);
+      if ( !mysql_query (pconn, comm) )
+        {
+          res = mysql_store_result (pconn);
+          members.num = mysql_num_rows (res);
+          members.data = (int*)calloc (members.num, members.size);
+          for (int i = 0; i < members.num ; i++)
+            {
+              row = mysql_fetch_row (res);
+              ((int*)members.data)[i] = atoi (row[0]);
+            }
+          mysql_free_result (res);
+        }
+      else
+        {
+          fputs ("Failed to query while counting memberships!\n", stderr);
+        }
+    }
+  mysql_close (pconn);
+  free (pconn);
+  return members;
 }
 
 bool deletemembership (const int gid, const int uid)
@@ -524,13 +556,14 @@ bool addgroupmessage (const time_t t, const int masterid, const int goalid, cons
   return suc;
 }
 
-/*
+
 int main ()
 {
-  for (int i = 0; i < 3; i++)
+  general_array ms = listmembership (0);
+  for (int i = 0; i < ms.num; i++)
     {
-      client_info info = getuser (i);
-      printf("%d\t%s\t%s\t%d\t%s\t%s\n", info.id, info.passwd, info.nickname, info.avatar, info.bio, info.birthday);
+      printf("%d\n", ((int*)ms.data)[i]);
     }
+  return 0;
 }
-*/
+
