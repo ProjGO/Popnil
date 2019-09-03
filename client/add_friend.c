@@ -62,7 +62,7 @@ void search(GtkWidget *window, gpointer data)
         exit(1);
     }
     client_info *msg=(client_info*)malloc(sizeof(client_info));
-    read(fd_log,msg, sizeof(client_info));
+    read(fd_log, msg, sizeof(client_info));
     if(msg->id==-1)
     {
         //显示查无此人
@@ -70,7 +70,7 @@ void search(GtkWidget *window, gpointer data)
     else
     {
         gtk_label_set_text(user_name, msg->nickname);
-        printf("%s\n", user_name);
+        printf("%s\n", msg->nickname);
         char str_id[24];
         sprintf(str_id, "%d", msg->id);
         gtk_label_set_text(id, str_id);
