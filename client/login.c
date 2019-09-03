@@ -38,8 +38,8 @@ void button_clicked (GtkWidget *window, gpointer data)
             exit(1);
         }
         response_s2c *msg = (response_s2c*)malloc(sizeof(response_s2c));
-//        read(fd_log,msg, sizeof(response_s2c));
-        if(msg->return_val||1)
+        read(fd_log,msg, sizeof(response_s2c));
+        if(msg->return_val)
         {
             fd_chat = open_clientfd_old(DEFAULT_IP,DEFAULT_PORT);
             fd_file = open_clientfd_old(DEFAULT_IP,DEFAULT_PORT);
@@ -47,6 +47,7 @@ void button_clicked (GtkWidget *window, gpointer data)
         }
         else
             printf("%s\n",msg->err_msg);
+        free(msg);
     }
 }
 

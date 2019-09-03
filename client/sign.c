@@ -80,7 +80,7 @@ GtkWidget * sign()
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);	//设置位置
     gtk_window_set_default_size(GTK_WINDOW(window), 1000, 600);		//设置默认大小
     gtk_window_set_resizable(GTK_WINDOW(window),FALSE);
-
+    g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
     nickname_label = gtk_label_new("Nikname:");
     gtk_label_set_markup(
             GTK_LABEL(nickname_label),

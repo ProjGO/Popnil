@@ -21,7 +21,7 @@ int check_clients(pool *p);
 int check_clients(pool *p);
 int check_id_log(int fd);
 
-int byte_cnt = 0;
+int byte_cnt=0;
 
 int main(int argc, char **argv)
 {
@@ -57,7 +57,7 @@ int main(int argc, char **argv)
             rio_t newclient;
             rio_readinitb(&newclient,fd_log);
             rio_readnb(&newclient,&op,sizeof(OP_TYPE));
-//            read(fd_log,&op, sizeof(OP_TYPE));
+            //read(fd_log,&op, sizeof(OP_TYPE));
             switch(op)
             {
                 case LOGIN: //登录功能
@@ -107,24 +107,25 @@ int main(int argc, char **argv)
             fd_log=check_clients(&pool_log);
             rio_t newclient;
             rio_readinitb(&newclient,fd_log);
-            rio_readlineb(&newclient,&op,sizeof(OP_TYPE));
+            rio_readnb(&newclient,&op,sizeof(OP_TYPE));
             switch (op)
             {
                 case SEARCH_FRIEND://查找好友
                 {
                     oper_friend_info * s=(oper_friend_info*)malloc(sizeof(oper_friend_info));
-                    rio_readlineb(&newclient,s,sizeof(s));
-                    s->type=ADD_FRIEND;
+//                    read(fd_log,s,sizeof(oper_friend_info));
+                    rio_readnb(&newclient,s,sizeof(oper_friend_info));
+                    s->type=SEARCH_FRIEND;
                     s->id_app=check_id_log(fd_log);
                     s->fd_app=fd_log;
                     s->fd_re=FD_log[s->id_re];
                     if(operate_friend(s))
                     {
-                        printf("id%d与id%d添加好友成功\n",s->id_app,s->id_re);
+                        printf("id%d查询id%d成功\n",s->id_app,s->id_re);
                     }
                     else
                     {
-                        printf("添加好友失败\n");
+                        printf("查询好友失败\n");
                     }
                     free(s);
                     break;
@@ -259,23 +260,13 @@ void add_client(int connfd, pool *p)
 
 int check_clients(pool *p)
 {
-    int i, connfd, n;
-    char buf[1024];
-    rio_t rio;
+    int i, connfd;
 
     for(i = 0; (i <= p->maxi) && (p->nready > 0); i++)
     {
         connfd = p->clientfd[i];
-        rio = p->clientrio[i];
-
         if((connfd > 0) && (FD_ISSET(connfd, &p->ready_set)))
-        {
-            p->nready--;
-            if((n=rio_readlineb(&rio, buf, 1024)) != 0)
-            {
-                return connfd;
-            }
-        }
+            return connfd;
     }
 }
 
