@@ -21,12 +21,12 @@ extern GtkWidget * id2window[100];
 text_pack_t recved_messages[100];
 int recved_messages_cnt = 0;
 
-void send_button_clicked(GtkWidget *window, gpointer *data)
+void send_button_clicked(GtkWidget *window, int *target_id)
 {
     text_pack_t text_pack;
     strcpy(text_pack.text, gtk_entry_get_text(GTK_ENTRY((GtkWidget *)input)));
-    text_pack.id = 1;//////////////////////////////
-    rio_writen(fd_chat,&text_pack, sizeof(text_pack_t));
+    text_pack.id = *target_id;//////////////////////////////
+    rio_writen(fd_chat, &text_pack, sizeof(text_pack_t));
 }
 
 void on_font_select_ok (GtkWidget *button,GtkFontSelectionDialog *fs)
@@ -170,7 +170,7 @@ void log_button_clicked(GtkWidget *widget)
 }
 
 
-GtkWidget* chat()
+GtkWidget* chat(GtkWidget *widget, int *target_id)
 {
     GtkWidget *window;
     GtkWidget *table, *table1, *table3, *table5;
@@ -229,7 +229,7 @@ GtkWidget* chat()
 
     hbox1 = gtk_hbox_new(TRUE, 1);
     send_button = gtk_button_new_with_label("发送");
-    g_signal_connect(send_button,"clicked",G_CALLBACK(send_button_clicked), NULL);
+    g_signal_connect(send_button,"clicked",G_CALLBACK(send_button_clicked), target_id);
 
     friend_portrait=gtk_image_new_from_file("../client/images/friend_portrait.png");
     gtk_container_add(GTK_CONTAINER(hbox1), friend_portrait);
