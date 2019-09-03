@@ -80,7 +80,7 @@ int adduser (const char nick[], const char passwd[])
         {
           res = mysql_store_result (pconn);
           id = mysql_num_rows (res);
-          sprintf (comm, "insert into `userinfo` values (%d, '%s', '%s', 2, '', curdate(), 0, 0);", id, passwd, nick);
+          sprintf (comm, "insert into `userinfo` values (%d, '%s', '%s', 1, '', curdate(), 0, 0);", id, passwd, nick);
           puts (comm);
           if ( mysql_query (pconn, comm) )
             {
