@@ -1,6 +1,10 @@
 #include <gtk/gtk.h>
 
+
+//extern local_user_info;
 extern GtkWidget *add_friends();
+extern GtkWidget *chat();
+extern GtkWidget *setting();
 /**添加一个好友列表或其群组列表
  * page 好友界面&群组界面
  * str 列表的名字
@@ -27,22 +31,70 @@ GtkWidget* add_list(GtkWidget *page, const char *str)
  * str好友或群组名字
  *
  */
+//弹出菜单回调函数
+static gint my_popup_handler (GtkWidget *widget, GdkEvent *event)
+{
+    GtkMenu *menu;
+    //要弹出菜单的对象
+    GdkEventButton *event_button;
+
+    g_return_val_if_fail (widget != NULL, FALSE);
+    g_return_val_if_fail (GTK_IS_MENU (widget), FALSE);
+    g_return_val_if_fail (event != NULL, FALSE);
+
+    //转换为菜单
+
+    menu = GTK_MENU (widget);
+    //判断是否是此事件
+    if (event->type == GDK_BUTTON_PRESS)
+    {
+        event_button = (GdkEventButton *) event;
+        //判断是否为左右键
+        if (event_button->button == 3)
+        {      //右键执行操作，第2～5个参数为NULL时表示在鼠标当前位置弹出菜单，
+            //第6个参数表示被按下的按钮，最后一个参数是鼠标按下的时间。
+
+            gtk_menu_popup (menu, NULL, NULL, NULL, NULL,event_button->button, event_button->time);
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
 void add_friend_group(GtkWidget* vbox, const char *str, const char *image_path)
 {
     GtkWidget* button = gtk_button_new();
     GtkWidget* hbox = gtk_hbox_new(TRUE, 0);
     GtkWidget* name_label = gtk_label_new(str);
     GtkWidget* image = gtk_image_new_from_file(image_path);
+    GtkWidget* filemenu;
+    GtkWidget* menuitem;
+    GtkAccelGroup* accel_group;
+
+
+    filemenu = gtk_menu_new();
+    menuitem = gtk_image_menu_item_new_from_stock("删除好友", accel_group);
+    gtk_menu_shell_append(GTK_MENU_SHELL(filemenu), menuitem);
+    gtk_widget_show(menuitem);
+
+//    gtk_menu_item_set_submenu(GTK_MENU_ITEM(rootmenu),filemenu);
+//    gtk_menu_shell_append(GTK_MENU_SHELL(menubar),rootmenu);
     //设置button背景透
     gtk_button_set_relief(button, GTK_RELIEF_NONE);
     //点击信号
-    g_signal_connect(G_OBJECT(button), "clicked", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(G_OBJECT(button), "clicked", G_CALLBACK(chat), NULL);
+    g_signal_connect_swapped(GTK_OBJECT(button),"button_press_event",G_CALLBACK(my_popup_handler), GTK_OBJECT(filemenu));
     gtk_box_pack_start(GTK_BOX(vbox), button, TRUE, TRUE, 0);
     gtk_container_add(GTK_CONTAINER(button), hbox);
     gtk_box_pack_start(GTK_BOX(hbox), image, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(hbox), name_label, TRUE, TRUE, 0);
 
 }
+
+void remove_friend_group(GtkWidget* container)
+{
+
+}
+
 GtkWidget* create_button(char *image_path, char *button_label)
 {
     GtkWidget *box;
@@ -104,12 +156,19 @@ void list()
     image_usericon = gtk_image_new_from_file("../client/images/friend_portrait.png");
     gtk_table_attach_defaults(GTK_TABLE(table), image_usericon, 1, 5, 1, 5);
 
-    label_username = gtk_label_new("XDX");
+    label_username = gtk_label_new("XDX");  ///////change to -> local_user_info.username;
     gtk_table_attach_defaults(GTK_TABLE(table),label_username, 5, 13, 1, 5);
 
-    search_entry = gtk_search_entry_new();
-    gtk_table_attach_defaults(GTK_TABLE(table),search_entry, 0, 16, 6, 8);
+    button_setting = create_button("../client/images/set.png", NULL);
+    gtk_table_attach_defaults(GTK_TABLE(table),button_setting, 11, 16, 0, 4);
+    g_signal_connect(GTK_BUTTON(button_setting),"clicked", G_CALLBACK(setting), NULL);
 
+    GdkPixbuf * pixbuf= gdk_pixbuf_new_from_file("../client/images/search.png", FALSE);
+
+    search_entry = gtk_entry_new();
+    gtk_table_attach_defaults(GTK_TABLE(table),search_entry, 0, 16, 6, 8);
+    gtk_entry_set_has_frame(search_entry, FALSE);
+    gtk_entry_set_icon_from_pixbuf(search_entry, GTK_ENTRY_ICON_PRIMARY, pixbuf);
     gtk_entry_set_text(search_entry, "Search...");
 
 
