@@ -170,7 +170,7 @@ void log_button_clicked(GtkWidget *widget)
 }
 
 
-GtkWidget* chat(GtkWidget *widget, int *target_id)
+GtkWidget* chat(char *target_name, int* target_id)
 {
     GtkWidget *window;
     GtkWidget *table, *table1, *table3, *table5;
@@ -188,7 +188,7 @@ GtkWidget* chat(GtkWidget *widget, int *target_id)
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_position(GTK_WINDOW(window),GTK_WIN_POS_CENTER);
     gtk_window_set_default_size(GTK_WINDOW(window),700,700);
-    gtk_window_set_title(GTK_WINDOW(window),"Chat");
+    gtk_window_set_title(GTK_WINDOW(window),target_name);
 
     gtk_container_set_border_width(GTK_CONTAINER(window),0);
 
@@ -234,7 +234,7 @@ GtkWidget* chat(GtkWidget *widget, int *target_id)
     friend_portrait=gtk_image_new_from_file("../client/images/friend_portrait.png");
     gtk_container_add(GTK_CONTAINER(hbox1), friend_portrait);
 
-    friend_name_label = gtk_label_new(friend_name);
+    friend_name_label = gtk_label_new(target_name);
     gtk_container_add(GTK_CONTAINER(hbox1), friend_name_label);
 
     table_chat = gtk_table_new(1,1,TRUE);
@@ -295,9 +295,9 @@ GtkWidget* chat(GtkWidget *widget, int *target_id)
     gtk_container_add(GTK_CONTAINER(frame3),table3);
 
 
-    input = gtk_text_view_new ();
-    buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (input));
-    gtk_text_buffer_set_text (buffer, "", -1);
+//    input = gtk_entry_new ();
+//    buffer = gtk_entry_get_buffer (GTK_TEXT_VIEW (input));
+//    gtk_text_buffer_set_text (buffer, "", -1);
 
 
     gtk_container_add(GTK_CONTAINER(frame4),input);

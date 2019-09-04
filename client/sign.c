@@ -9,6 +9,7 @@
 #include "../common/include/define.h"
 
 extern GtkWidget * sign_success(char * userid);
+extern void update_widget_bg(GtkWidget *widget, int w,int h, const gchar *img_file);
 GtkWidget *nickname_entry, *reg_password_entry;
 int sign_clicked (GtkWidget *window, gpointer data)
 {
@@ -54,7 +55,6 @@ int sign_clicked (GtkWidget *window, gpointer data)
         close(socketfd);
         char str[10];
         sprintf(str, "%d", msg->return_val);
-        gtk_widget_destroy(window);
         sign_success(str);
         free(msg);
     }
@@ -63,7 +63,7 @@ int sign_clicked (GtkWidget *window, gpointer data)
         printf("密码必长度必须大于三小于12!");
     }
 
-//    return 0;
+    return 0;
 }
 
 GtkWidget * sign()
@@ -81,7 +81,7 @@ GtkWidget * sign()
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);	//设置位置
     gtk_window_set_default_size(GTK_WINDOW(window), 1000, 600);		//设置默认大小
     gtk_window_set_resizable(GTK_WINDOW(window),FALSE);
-    g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+
     nickname_label = gtk_label_new("Nikname:");
     gtk_label_set_markup(
             GTK_LABEL(nickname_label),
@@ -123,6 +123,8 @@ GtkWidget * sign()
     gtk_box_pack_start(GTK_BOX(hbox), vbox, TRUE, FALSE, 1);
 
     gtk_container_add(GTK_CONTAINER(window), hbox);
+
+    // update_widget_bg(window,1000, 600, "../client/images/bg/8.jpg");
 
     gtk_widget_show_all(window);	//show窗口
     gtk_main ();

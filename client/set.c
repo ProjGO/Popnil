@@ -10,6 +10,9 @@ extern GtkWidget *window_list;
 
 extern void update_widget_bg(GtkWidget *widget, int w,int h, const gchar *img_file);
 
+GtkWidget *portrait;
+
+
 void addLabel(GtkWidget *info_table, const char *str, int columnl, int columnr, int rowu, int rowd)
 {
     GtkWidget *label = gtk_label_new(str);
@@ -92,7 +95,7 @@ GtkWidget* setting()
 {
 
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_widget_set_size_request(window, 1000, 700);
+    gtk_widget_set_size_request(window, 1000, 750);
     GtkWidget *notebook = gtk_notebook_new();
     gtk_container_add(GTK_CONTAINER(window), notebook);
     GtkWidget *per_info_window;
@@ -166,7 +169,7 @@ GtkWidget* setting()
     //创建盒子
     main_frame = gtk_hbox_new(TRUE, 0);
     person_vbox = gtk_vbox_new(TRUE, 0);
-    person_table = gtk_table_new(4, 1, FALSE);
+    person_table = gtk_table_new(10, 10, FALSE);
 
     info_vbox = gtk_vbox_new(TRUE, 0);
     info_frame = gtk_frame_new("Personal Information");
@@ -194,8 +197,8 @@ GtkWidget* setting()
     gtk_container_add(GTK_CONTAINER(info_frame), info_table);
 
     //个人背景图片
-    person_background_image = gtk_image_new_from_file("../client/images/tupian2.png"); //CLion
-    gtk_table_attach(GTK_TABLE(person_table), person_background_image, 0, 1, 0, 3, GTK_FILL, GTK_FILL, 0, 0);
+    person_background_image = gtk_image_new_from_file("../client/images/tupian2.jpg"); //CLion
+    gtk_table_attach(GTK_TABLE(person_table), person_background_image, 0, 10, 0, 5, GTK_FILL, GTK_FILL, 0, 0);
     //person_background_image = gtk_image_new_from_file("person_background.jpg"); //终端
     //gtk_box_pack_start(GTK_BOX(person_vbox), person_background_image, TRUE, TRUE, 0);
     //用户头像
@@ -208,8 +211,17 @@ GtkWidget* setting()
 
     //gtk_box_pack_start(GTK_BOX(person_vbox), person_profile_photo, TRUE, TRUE, 0);
 
+    portrait = gtk_image_new_from_file("../client/images/d_portrait.PNG");
+    GdkPixbuf *src = gdk_pixbuf_new_from_file("../client/images/d_portrait.PNG", NULL);
+    GdkPixbuf *dst = gdk_pixbuf_scale_simple(src,
+                                             150, 150, GDK_INTERP_BILINEAR);
+    gtk_image_set_from_pixbuf( GTK_IMAGE(portrait), dst);
+
+
+    gtk_table_attach(GTK_TABLE(person_table), portrait, 0, 10, 5, 9, GTK_FILL, GTK_FILL, 0, 50);
+
     select_portrait_button = gtk_button_new_with_label("更换头像");
-    gtk_table_attach(GTK_TABLE(person_table), select_portrait_button, 0, 1, 3, 4, GTK_FILL, GTK_FILL, 0, 0);
+    gtk_table_attach(GTK_TABLE(person_table), select_portrait_button, 4, 6, 9, 10, GTK_FILL, GTK_FILL, 0, 5);
 
     g_signal_connect(G_OBJECT(select_portrait_button),"clicked",
                      G_CALLBACK(select_portrait),NULL);
@@ -337,10 +349,13 @@ GtkWidget* setting()
                      G_CALLBACK(button6_clicked),NULL);
 
 
+
     g_signal_connect(notebook, "switch-page", G_CALLBACK(deal_switch_page), NULL);
 
 
     gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook),1);
+
+    //   update_widget_bg(notebook,400, 400, "../client/images/bg/8.jpg");
 
 
 

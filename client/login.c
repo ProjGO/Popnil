@@ -10,9 +10,12 @@
 
 
 extern GtkWidget * sign();
+extern GtkWidget * change_password();
 extern void list();
 //const char password[MAX_PWD_LEN] = "secret";
 extern int fd_log,fd_chat,fd_file;
+extern rio_t rio_log, rio_chat, rio_file;
+extern usr_id;
 GtkWidget *username_entry, *password_entry;
 GtkWidget *window_login;
 void button_clicked (GtkWidget *window, gpointer data)
@@ -40,11 +43,15 @@ void button_clicked (GtkWidget *window, gpointer data)
             exit(1);
         }
         response_s2c *msg = (response_s2c*)malloc(sizeof(response_s2c));
-//        read(fd_log,msg, sizeof(response_s2c));
-        if(msg->return_val||1)
+        read(fd_log,msg, sizeof(response_s2c));
+        if(msg->return_val)
         {
+            usr_id=info->id;
             fd_chat = open_clientfd_old(DEFAULT_IP,DEFAULT_PORT);
             fd_file = open_clientfd_old(DEFAULT_IP,DEFAULT_PORT);
+            rio_readinitb(&rio_chat, fd_chat);
+            rio_readinitb(&rio_log, fd_log);
+            rio_readinitb(&rio_file, fd_file);
             g_signal_connect ( window, "destroy",
                                G_CALLBACK (gtk_main_quit), NULL);
             gtk_widget_destroy(window_login);
@@ -65,6 +72,12 @@ int login (int argc, char *argv[])
     GtkWidget *hbox, *vbox, *vbox1, *vbox2;
     GtkWidget *frame;
 
+//    if ( !g_thread_supported() )   //判断线程有没有初始化过
+//    {
+//        g_thread_init(NULL);
+//        gdk_threads_init();
+//    }
+
 
     gtk_init(&argc, &argv);
 
@@ -78,7 +91,7 @@ int login (int argc, char *argv[])
                        G_CALLBACK (gtk_main_quit), NULL);	//为窗口连接“退出事件”
 
     sign_button = gtk_button_new_with_label("注册账号");
-    retrieve_button = gtk_button_new_with_label("找回密码");
+    retrieve_button = gtk_button_new_with_label("修改密码");
 
 
 
@@ -89,9 +102,11 @@ int login (int argc, char *argv[])
 
     ok_button = gtk_button_new_with_label("登录");		//设置“OK”按钮
 
+//    gdk_threads_enter();
+
     g_signal_connect (ok_button, "clicked",
                       G_CALLBACK(button_clicked), password_entry);	//为ok_button链接“单击事件”
-
+//    gdk_threads_leave;
 
     hbox0 = gtk_hbox_new ( TRUE, 1 );
     hbox1 = gtk_hbox_new ( TRUE, 1 );		//创建hbox1
@@ -102,7 +117,8 @@ int login (int argc, char *argv[])
     g_signal_connect ( sign_button, "clicked",
                        G_CALLBACK (sign), NULL);
 
-
+    g_signal_connect ( retrieve_button, "clicked",
+                       G_CALLBACK (change_password), NULL);
 
     hbox = gtk_hbox_new ( TRUE, 1 );
     vbox = gtk_vbox_new ( FALSE, 1);		//创建vbox
@@ -139,7 +155,11 @@ int login (int argc, char *argv[])
 
 
     gtk_widget_show_all(window_login);	//show窗口
-    gtk_main ();
+
+
+//    gdk_threads_enter();
+    gtk_main();
+//    gdk_threads_leave();
 
     return 0;
 }
