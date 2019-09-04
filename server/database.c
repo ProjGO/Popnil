@@ -465,6 +465,69 @@ general_array listmembership (const int gid)
   return members;
 }
 
+general_array listadministrator (const int gid)
+{
+  MYSQL *pconn;
+  MYSQL_RES *res;
+  MYSQL_ROW row;
+  general_array administrators;
+
+  administrators.size = sizeof (int);
+  if ( (pconn= connect_db ()) != NULL )
+    {
+      char comm[1024] = "\0";
+      sprintf (comm, "select `uid` from `membership` where `gid` = %d and `permission` < %d;", gid, none);
+      puts (comm);
+      if ( !mysql_query (pconn, comm) )
+        {
+          res = mysql_store_result (pconn);
+          administrators.num = mysql_num_rows (res);
+          administrators.data = (int*)calloc (administrators.num, administrators.size);
+          for (int i = 0; i < administrators.num ; i++)
+            {
+              row = mysql_fetch_row (res);
+              ((int*)administrators.data)[i] = atoi (row[0]);
+            }
+          mysql_free_result (res);
+        }
+      else
+        {
+          fputs ("Failed to query while counting administrators!\n", stderr);
+        }
+    }
+  mysql_close (pconn);
+  free (pconn);
+  return administrators;
+}
+int getowner (const int gid)
+{
+  MYSQL *pconn;
+  MYSQL_RES *res;
+  MYSQL_ROW row;
+  int ans;
+
+  if ( (pconn= connect_db ()) != NULL )
+    {
+      char comm[1024] = "\0";
+      sprintf (comm, "select `uid` from `membership` where `gid` = %d and `permission` = %d;", gid, owner);
+      puts (comm);
+      if ( !mysql_query (pconn, comm) )
+        {
+          res = mysql_store_result (pconn);
+          row = mysql_fetch_row (res);
+          ans = atoi (row[0]);
+          mysql_free_result (res);
+        }
+      else
+        {
+          fputs ("Failed to query while searching owwner!\n", stderr);
+        }
+    }
+  mysql_close (pconn);
+  free (pconn);
+  return ans;
+}
+
 bool deletemembership (const int gid, const int uid)
 {
   MYSQL *pconn;
@@ -565,14 +628,16 @@ bool addgroupmessage (const time_t t, const int masterid, const int goalid, cons
 }
 
 
-/*
+
 int main ()
 {
 
-  if ( addfriendship (3, 0) == true )
+  general_array ad = listadministrator (0);
+  for (int i = 0; i < ad.num; i++)
     {
-      deletefriendship (0, 3);
+      printf("%d\n", ((int*)ad.data)[i]);
     }
+  printf("owner: %d\n", getowner (0));
   return 0;
 }
-*/
+
