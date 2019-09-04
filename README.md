@@ -61,6 +61,8 @@ cd cmake-build-debug/
 make client server
 ```
 
+## Running
+
 ### Run the server
 
 ```bash
