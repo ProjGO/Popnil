@@ -157,7 +157,7 @@ int addgroup (const int ownerid, const char name[])
         {
           res = mysql_store_result (pconn);
           id = mysql_num_rows (res);
-          sprintf (comm, "insert into `groupinfo` values (%d, '%s', curdate());", id, name);
+          sprintf (comm, "insert into `groupinfo` values (%d, '%s', 1, curdate());", id, name);
           puts (comm);
           if ( mysql_query (pconn, comm) )
             {
@@ -465,6 +465,41 @@ general_array listmembership (const int gid)
   return members;
 }
 
+general_array listgroup (const int uid)
+{
+  MYSQL *pconn;
+  MYSQL_RES *res;
+  MYSQL_ROW row;
+  general_array groups;
+
+  groups.size = sizeof (int);
+  if ( (pconn= connect_db ()) != NULL )
+    {
+      char comm[1024] = "\0";
+      sprintf (comm, "select `gid` from `membership` where `uid` = %d;", uid);
+      puts (comm);
+      if ( !mysql_query (pconn, comm) )
+        {
+          res = mysql_store_result (pconn);
+          groups.num = mysql_num_rows (res);
+          groups.data = (int*)calloc (groups.num, groups.size);
+          for (int i = 0; i < groups.num ; i++)
+            {
+              row = mysql_fetch_row (res);
+              ((int*)groups.data)[i] = atoi (row[0]);
+            }
+          mysql_free_result (res);
+        }
+      else
+        {
+          fputs ("Failed to query while counting groups!\n", stderr);
+        }
+    }
+  mysql_close (pconn);
+  free (pconn);
+  return groups;
+}
+
 general_array listadministrator (const int gid)
 {
   MYSQL *pconn;
@@ -628,16 +663,16 @@ bool addgroupmessage (const time_t t, const int masterid, const int goalid, cons
 }
 
 
-/*
+
 int main ()
 {
 
-  general_array ad = listadministrator (0);
+  general_array ad = listgroup (1);
   for (int i = 0; i < ad.num; i++)
     {
       printf("%d\n", ((int*)ad.data)[i]);
     }
-  printf("owner: %d\n", getowner (0));
+  //printf("owner: %d\n", getowner (0));
   return 0;
 }
-*/
+

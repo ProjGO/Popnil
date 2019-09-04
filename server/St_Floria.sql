@@ -1,5 +1,5 @@
 insert into `groupinfo` values
-	(0, 'St. Floria', curdate());
+	(0, 'St. Floria', 1, curdate());
 
 insert into `membership` values
 	(0, 0, 2, curdate()),
