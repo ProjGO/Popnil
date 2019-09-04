@@ -6,7 +6,7 @@
 #define LINPOP_DEFINE_H
 
 #include "rio.h"
-
+#include <gtk/gtk.h>
 
 #define TIME_INFO_LEN 20 // YYYY_MM_DD_HH_MM_SS
 #define MAX_NAME_LEN 32
@@ -129,5 +129,18 @@ typedef enum Permission
     none
 } Permission;
 
+
+
+//记录每个好友和群组的信息
+struct  friend_and_group
+{
+    GtkWidget* vbox; //vbox代表在哪一个列表中
+    GtkWidget* button; //button代表在列表中哪一个控件中
+    int id;
+    char *number_name[25];
+    char *list_name[25];
+    gboolean is_empty; //判断该位置是否可以存储好友信息
+    int friend_group_num; //记录每列中好友的个数
+};
 
 #endif //LINPOP_DEFINE_H

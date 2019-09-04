@@ -18,7 +18,7 @@ GtkWidget *window;
 extern int fd_log, fd_chat, fd_file;
 extern int all_ids[100]; // 所有与这个人有关系的id,在登陆时由服务器告知,并在加好友/群时更新
 extern int all_ids_cnt; // 字面意思
-extern client_info target;
+//extern client_info target;
 extern GtkWidget * id2window[100];
 extern int usr_id;
 extern client_info my_info;
@@ -39,7 +39,7 @@ void update_chat(gchar *massage,gchar *name,gint icon,gint id)
     gtk_widget_show_all(window);
 }
 
-void send_button_clicked(GtkWidget *window)
+void send_button_clicked(int *target_id)
 {
     char *text;
 
@@ -59,8 +59,8 @@ void send_button_clicked(GtkWidget *window)
     memset(&text_pack, 0, sizeof(text_pack));
     //strcpy(text_pack.text, gtk_entry_get_text(GTK_ENTRY((GtkWidget *)input)));
     strcpy(text_pack.text,temp);
-    //text_pack.id = target.id;//////////////////////////////
-    text_pack.id = opend_list_idx2id[max_chat_window_idx-1];
+    text_pack.id = *target_id;//////////////////////////////
+    //text_pack.id = opend_list_idx2id[max_chat_window_idx-1];
     if(write(fd_log, &text_pack, sizeof(text_pack_t))<0)
         printf("f**k you\n");
 }
@@ -119,7 +119,7 @@ void emoji_button_clicked(GtkWidget *button,gpointer userdata)
     gtk_container_add (GTK_CONTAINER (icon), vbox);
     gtk_widget_show_all (icon);
 }
-void OpenFile(GtkWidget *widget,gpointer *data)
+void OpenFile(int *target_id)
 {
 
     // g_print("%s/n",gtk_file_selection_get_filename(GTK_FILE_SELECTION(FileSelection)));
@@ -132,7 +132,7 @@ void OpenFile(GtkWidget *widget,gpointer *data)
     struct stat statbuf;
     stat(filename, &statbuf);
     int filesize = statbuf.st_size;
-    rio_writen(fd_log, &target.id, sizeof(int)); // 发送目标id
+    rio_writen(fd_log, target_id, sizeof(int)); // 发送目标id
     rio_writen(fd_log, &filesize, sizeof(int)); // 发送文件大小
     FILE *file = fopen(filename, "rb");
     if(!file){
@@ -151,7 +151,7 @@ void OpenFile(GtkWidget *widget,gpointer *data)
     }
     rio_writen(fd_log, buf, filesize); // 发送文件
 }
-void doc_button_clicked(GtkWidget *widget,gpointer *data)
+void doc_button_clicked(int *target_id)
 
 {
 
@@ -159,8 +159,8 @@ void doc_button_clicked(GtkWidget *widget,gpointer *data)
 
     gtk_file_selection_set_filename(GTK_FILE_SELECTION(FileSelection),"*.txt");
 
-    g_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(FileSelection)->ok_button),
-            "clicked",GTK_SIGNAL_FUNC(OpenFile),NULL);/*捕捉打开按纽的”clicked”信号*/
+    g_signal_connect_swapped(GTK_OBJECT(GTK_FILE_SELECTION(FileSelection)->ok_button),
+            "clicked",GTK_SIGNAL_FUNC(OpenFile),target_id);/*捕捉打开按纽的”clicked”信号*/
 
     gtk_signal_connect_object(GTK_OBJECT(GTK_FILE_SELECTION(FileSelection)->cancel_button),
                               "clicked",GTK_SIGNAL_FUNC(gtk_widget_destroy),
@@ -227,10 +227,10 @@ void log_button_clicked(GtkWidget *widget)
 
 }
 
-GtkWidget* chat(GtkWidget *button)
+GtkWidget* chat(int *target_id)
 {
-
-
+    printf("target id: %d\n", *target_id);
+    client_info target_info = get_info_by_id(*target_id);
     GtkWidget *table, *table1, *table3, *table5;
     GtkWidget *frame1, *frame2, *frame3, *frame4, *frame5;
     GtkWidget *hbox1;
@@ -245,7 +245,7 @@ GtkWidget* chat(GtkWidget *button)
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);////////////////////////////
     gtk_window_set_position(GTK_WINDOW(window),GTK_WIN_POS_CENTER);
     gtk_window_set_default_size(GTK_WINDOW(window),700,700);
-    gtk_window_set_title(GTK_WINDOW(window),target.nickname);
+    gtk_window_set_title(GTK_WINDOW(window),target_info.nickname);
 
     gtk_container_set_border_width(GTK_CONTAINER(window),0);
 
@@ -286,12 +286,13 @@ GtkWidget* chat(GtkWidget *button)
 
     hbox1 = gtk_hbox_new(TRUE, 1);
     send_button = gtk_button_new_with_label("发送");
-    g_signal_connect(send_button,"clicked",G_CALLBACK(send_button_clicked), NULL);
+    g_signal_connect_swapped(G_OBJECT(send_button),"clicked",G_CALLBACK(send_button_clicked), target_id);
 
-    friend_portrait=gtk_image_new_from_file("../client/images/friend_p.ortrait.png");
+    char *portrait_filename = get_portrait_filename_by_idx(target_info.portrait_idx);
+    friend_portrait=gtk_image_new_from_file(portrait_filename);
     gtk_container_add(GTK_CONTAINER(hbox1), friend_portrait);
 
-    friend_name_label = gtk_label_new(target.nickname);
+    friend_name_label = gtk_label_new(target_info.nickname);
     gtk_container_add(GTK_CONTAINER(hbox1), friend_name_label);
 
     table_chat = gtk_table_new(1,1,TRUE);
@@ -331,12 +332,10 @@ GtkWidget* chat(GtkWidget *button)
     g_signal_connect(G_OBJECT(emoji_button),"clicked",
                      G_CALLBACK(emoji_button_clicked),NULL);
 
-    gtk_signal_connect(GTK_OBJECT(doc_button),"clicked",
-            G_CALLBACK(doc_button_clicked),NULL);
+    g_signal_connect_swapped(GTK_OBJECT(doc_button),"clicked",
+            G_CALLBACK(doc_button_clicked),target_id);
     gtk_signal_connect(GTK_OBJECT(history_button),"clicked",
                        G_CALLBACK(log_button_clicked),NULL);
-
-
 
     gtk_container_add(GTK_CONTAINER(font_button),font);
     gtk_container_add(GTK_CONTAINER(emoji_button),emoji);
@@ -371,7 +370,7 @@ GtkWidget* chat(GtkWidget *button)
 
 
     gtk_widget_show_all(window);
-    opend_list_idx2id[max_chat_window_idx]=target.id;
+    opend_list_idx2id[max_chat_window_idx]=*target_id;
     idx2list [max_chat_window_idx]=llist;
     idx2window[max_chat_window_idx]=window;
     max_chat_window_idx++;
