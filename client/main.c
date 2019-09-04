@@ -31,6 +31,7 @@ int opend_list_idx2id[100]; // 已经打开的list->它们对应的id
 general_array friendlist;
 
 int main(int argc, char *argv[]){
+
     rio_readinitb(&rio_log, fd_log);
 
 //    GtkWidget *w = window();
@@ -40,15 +41,4 @@ int main(int argc, char *argv[]){
     //sign(argc, argv);
     //sign_success(argc, argv);
     return 0;
-}
-
-client_info get_info_by_id(int id)
-{
-    client_info result;
-    client_info *client_info_list = (client_info*)friendlist.data;
-    for(int i = 0; i < MAX_USR_NUM; i++)
-        if(client_info_list[i].id == id)
-            return client_info_list[i];
-    printf("info not found by id\n");
-    exit(-1);
 }

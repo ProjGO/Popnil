@@ -3,8 +3,9 @@
 //
 
 #include "../common/include/include.h"
-#include "../common/include/rio.h"
 #include "../common/include/define.h"
+#include "../common/include/client_utils.h"
+#include "../common/include/rio.h"
 #include "tools.h"
 
 
@@ -40,7 +41,10 @@ void *thread_recv_msg(void *vargp)
                 //opend_list_idx2id[0]= 4;
 
                 int idx = id2idx(source_id);
-                sungtk_clist_append(idx2list[idx], recved_text, "../client/images/head_48.png", "F**K YOU",source_id);
+                client_info source_info = get_info_by_id(source_id);
+                char *portrait_filename = get_portrait_filename_by_idx(source_info.portrait_idx);
+                sungtk_clist_append(idx2list[idx], recved_text, portrait_filename, source_info.nickname,source_id);
+                free(portrait_filename);
                 gtk_widget_show_all(idx2window[idx]);
                 
                 break;

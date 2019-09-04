@@ -1,6 +1,6 @@
-#include <gtk/gtk.h>
 #include "../common/include/database.h"
 #include "../common/include/include.h"
+#include "../common/include/client_utils.h"
 
 //extern local_user_info;
 extern GtkWidget *add_friends();
@@ -37,12 +37,8 @@ int get_id_by_button(GtkWidget *button) // 通过现在点击的按钮的指针�
     return -1;
 }
 
-/**添加一个好友列表或其群组列表
- * page 好友界面&群组界面
- * str 列表的名字
- * 返回vbox来添加好友或群组
- */
-general_array update_friend_info_c(rio_t *rio_log, int fd_log)
+// 得到自己的信息及所有好友的信息
+general_array update_my_and_friend_info_c()
 {
     OP_TYPE type = UPDATE;
     int friend_num = 0;
@@ -403,11 +399,6 @@ void list()
                        G_CALLBACK (gtk_main_quit), NULL);	//为窗口连接“退出事件”
 //  g_signal_connect(GTK_WINDOW(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
-
-
-    image_usericon = gtk_image_new_from_file("../client/images/d_portrait.PNG");
-    gtk_table_attach_defaults(GTK_TABLE(table), image_usericon, 1, 5, 1, 5);
-
 //    label_username = gtk_label_new(my_info.nickname);
 //    gtk_table_attach_defaults(GTK_TABLE(table),label_username, 5, 13, 1, 5);
 
@@ -471,13 +462,20 @@ void list()
 //    add_list_groups(page_group_vbox, "我的同学", "xdx", "../client/images/emoji.png");
 //    add_list_groups(page_group_vbox, "我的同学", "666", "../client/images/emoji.png");
 
+
+
     //////zzk
-    friendlist = update_friend_info_c(&rio_log,fd_log);
+    // 拉取所有好友信息及自己的信息,自己的信息直接被填到my_info里了
+    friendlist = update_my_and_friend_info_c();
 //    GtkWidget* my_friend_vbox =add_list(page_friend_vbox, "我的好友");
     client_info * tem = (client_info*) friendlist.data;
     for(int i=0;i<friendlist.num;i++)
     {//zzk change
-        add_list_friends(page_friend_vbox, "my friend", tem[i].nickname ,"../client/images/emoji.png");
+        client_info info = get_info_by_id(tem[i].id);
+        char *portrait_filename = get_portrait_filename_by_idx(info.portrait_idx);
+        printf("%s\n", portrait_filename);
+        add_list_friends(page_friend_vbox, "my friend", tem[i].nickname ,portrait_filename);
+        free(portrait_filename);
 //        add_friend_group(my_friend_vbox,tem[i].nickname , "../client/images/emoji.png");
         target = tem[i];
         opend_list_idx2id[max_chat_window_idx]=target.id;
@@ -493,7 +491,17 @@ void list()
    
 
     label_username = gtk_label_new(my_info.nickname);
+    char *css = (char*) malloc(200*sizeof(char));
+    sprintf(css, "<span font_desc='25'>%s</span>", my_info.nickname);
+    gtk_label_set_markup(GTK_LABEL(label_username),css);
+    free(css);
     gtk_table_attach_defaults(GTK_TABLE(table),label_username, 5, 13, 1, 5);
+
+    char *portrait_filename = get_portrait_filename_by_idx(my_info.portrait_idx);
+    printf("user: %s\n", portrait_filename);
+    image_usericon = gtk_image_new_from_file(portrait_filename);
+    free(portrait_filename);
+    gtk_table_attach_defaults(GTK_TABLE(table), image_usericon, 1, 5, 1, 5);
 
     gtk_widget_show_all(window_list);
 

@@ -7,7 +7,7 @@ create table `userinfo`
 	primary key (`id`),
 	`passwd` varchar(32) default '' not null,
 	`nick` varchar(32) default '' not null,
-	`avatar` int default 0 not null,
+	`portrait_idx` int default 0 not null,
 	`bio` varchar(1024) default '' not null,
 	`birthday` date not null,
 	`ip` int default 0 not null,

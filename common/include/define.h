@@ -14,6 +14,7 @@
 #define MAX_MSG_LEN 512
 #define MAX_USR_NUM 100
 #define MAX_FILE_SIZE (1024*1024*20)
+#define MAX_FILENAME_LENGTH 256
 #define DEFAULT_PORT 8088
 #define DEFAULT_IP "127.0.0.1"
 
@@ -28,7 +29,7 @@ typedef struct client_info
     char nickname[32];
     char bio[1024];
     char birthday[20];
-    int avatar;
+    int portrait_idx;
 }client_info;
 
 typedef struct login_info_c2s

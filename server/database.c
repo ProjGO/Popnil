@@ -122,7 +122,7 @@ client_info getuser (const int id)
 
               strcpy (ans.passwd, row[1]);
               strcpy (ans.nickname, row[2]);
-              ans.avatar = atoi (row[3]);
+              ans.portrait_idx = atoi (row[3]);
               strcpy (ans.bio, row[4]);
               strcpy (ans.birthday, row[5]);
             }
