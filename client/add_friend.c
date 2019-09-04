@@ -16,7 +16,7 @@ char* default_id = "1120173454";
 char* default_name = "xdx";
 extern GtkWidget *create_button(char *image_path, char *button_label);
 extern void update_widget_bg(GtkWidget *widget, int w,int h, const gchar *img_file);
-
+GtkWidget* add_friend_window;
 
 
 
@@ -48,13 +48,13 @@ void add(GtkWidget *window, gpointer data)
     type = GTK_MESSAGE_INFO ;
     dialog = gtk_message_dialog_new(NULL,
                                     GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, type ,
-            GTK_BUTTONS_OK,
-            message);
+                                    GTK_BUTTONS_OK,
+                                    message);
 
 //    client_info* new_friend=(client_info*)malloc(sizeof(client_info));
 //    read(fd_log,new_friend,sizeof(client_info));
-    add_list_friends(page_friend_vbox, "my friend", msg->nickname, default_image_path);
-    gtk_widget_show(page_friend_vbox);
+//    add_list_friends(page_friend_vbox, "my friend", msg->nickname, default_image_path);
+//    gtk_widget_show(page_friend_vbox);
     gtk_dialog_run(GTK_DIALOG(dialog));
     gtk_widget_destroy(dialog);
 }
@@ -168,5 +168,5 @@ GtkWidget *add_friends()
     gtk_widget_show_all(add_friend_window);
     gtk_main();
     free(msgback);
-    return window;
+    return add_friend_window;
 }

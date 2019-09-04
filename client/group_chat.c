@@ -15,7 +15,7 @@ GtkWidget *FileSelection;
 GtkTextBuffer *buffer;
 GtkWidget *icon;
 
-
+extern void update_chat(gchar *message, gchar *name, gint icon, gint id);
 
 void on_font_group_select_ok (GtkWidget *button,GtkFontSelectionDialog *fs)
 {
@@ -96,12 +96,7 @@ void doc_button_group_clicked(GtkWidget *widget,gpointer *data)
     gtk_widget_show(FileSelection);
 
 }
-void update_chat(gchar *message, gchar *name, gint icon, gint id)
-{
 
-    sungtk_clist_append(glist, message, "../client/images/head_48.png", name,id);
-    gtk_widget_show_all(window);
-}
 void update_friend_list(gchar *role, gchar* name, gint icon, gint id)
 {
     sungtk_clist_append(friend_list, role, "../client/images/head_48.png", name,id);

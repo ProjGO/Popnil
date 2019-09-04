@@ -13,13 +13,13 @@
 #define MAX_PWD_LEN 512
 #define MAX_MSG_LEN 512
 #define MAX_USR_NUM 100
-#define MAX_PIC_SIZE (1024*1024*3)
+#define MAX_FILE_SIZE (1024*1024*20)
 #define DEFAULT_PORT 8088
 #define DEFAULT_IP "127.0.0.1"
 
 /*-----------------------------------用户登陆注册等相关------------------------------------*/
 typedef enum OP_TYPE {LOGIN, REGISTER,SEARCH_FRIEND,ADD_FRIEND,DELETE_FRIEND,ADD_GROUP,DELETE_GROUP,
-                      JOIN_GROUP,QUIT_GROUP,UPDATE} OP_TYPE;
+                      JOIN_GROUP,QUIT_GROUP,UPDATE, TEXT_trans, FILE_trans} OP_TYPE;
 
 typedef struct client_info
 {
@@ -88,7 +88,7 @@ typedef struct response_s2c
 
 
 /*-----------------------------------聊天相关------------------------------------*/
-typedef enum MSG_TYPE {TEXT, PIC} MSG_TYPE;
+typedef enum MSG_TYPE {TEeXT, PIC} MSG_TYPE;
 
 typedef struct text_pack_t
 {

@@ -15,9 +15,12 @@ extern void list();
 //const char password[MAX_PWD_LEN] = "secret";
 extern int fd_log,fd_chat,fd_file;
 extern rio_t rio_log, rio_chat, rio_file;
-extern usr_id;
+extern int usr_id;
 GtkWidget *username_entry, *password_entry;
 GtkWidget *window_login;
+
+extern void *thread_recv_msg(void *vargp);
+
 void button_clicked (GtkWidget *window, gpointer data)
 {
     login_info *info = (login_info *) malloc(sizeof(login_info));
@@ -43,19 +46,24 @@ void button_clicked (GtkWidget *window, gpointer data)
             exit(1);
         }
         response_s2c *msg = (response_s2c*)malloc(sizeof(response_s2c));
-        read(fd_log,msg, sizeof(response_s2c));
+        read(fd_log, msg, sizeof(response_s2c));
         if(msg->return_val)
         {
-            usr_id=info->id;
+            usr_id = info->id;
             fd_chat = open_clientfd_old(DEFAULT_IP,DEFAULT_PORT);
             fd_file = open_clientfd_old(DEFAULT_IP,DEFAULT_PORT);
-            rio_readinitb(&rio_chat, fd_chat);
-            rio_readinitb(&rio_log, fd_log);
-            rio_readinitb(&rio_file, fd_file);
+            printf("log: %d, chat: %d, file: %d\n", fd_log, fd_chat, fd_file);
             g_signal_connect ( window, "destroy",
                                G_CALLBACK (gtk_main_quit), NULL);
-            gtk_widget_destroy(window_login);
+            rio_readinitb(&rio_log, fd_log);
+            rio_readinitb(&rio_chat, fd_chat);
+            rio_readinitb(&rio_file, fd_file);
+
+            pthread_t pid;
+            pthread_create(&pid, NULL, thread_recv_msg, NULL);
+
             list();
+
         }
         else
             printf("%s\n",msg->err_msg);

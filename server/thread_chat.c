@@ -14,13 +14,14 @@ int get_fd_by_id(int id);
 
 void *thread_chat(void *vargp)
 {
-    int connfd, n;
+    int connfd;
     char buf[1024]; // 接收消息用的buf
     char pic_buf[MAX_PIC_SIZE]; // 接收图片用的buf
     rio_t *rio; // ==========================
     while(1) {
-        pool_chat.ready_set = pool_chat.ready_set;
+        pool_chat.ready_set = pool_chat.read_set;
         pool_chat.nready = select(pool_chat.maxfd + 1, &pool_chat.ready_set, NULL, NULL, NULL);
+        printf("%d\n", errno);
         for (int i = 0; (i <= pool_chat.maxi && i <= pool_chat.nready); i++) {
             connfd = pool_chat.clientfd[i]; // 现在在检查的这个connfd
             rio = &pool_chat.clientrio[i]; // 现在在检查的这个connfd对应的rio_t
@@ -35,14 +36,16 @@ void *thread_chat(void *vargp)
                 sscanf(buf, "%d", &msg_type); // 字符串->数字
                 printf("received msg_type %d from user %d\n", msg_type, get_id_by_fd(connfd));
                 switch (msg_type) {
-                    case TEXT: { // 如果是文字信息
+                    case TEXT_trans: { // 如果是文字信息
                         if (rio_readnb(rio, buf, sizeof(text_pack_t))>=0) // 如果成功将消息包接收到buf指向的内存中
                         {
                             text_pack_t *text_pack_c2s = (text_pack_t *) buf; // 类型转换
+                            
                             general_array target_ids_array;
                             target_ids_array.num  = 1;
                             int *target_ids = (int *) target_ids_array.data;
                             target_ids[0] = text_pack_c2s->id;
+                            
                             for (int j = 0; j < target_ids_array.num; j++) {
                                 target_fd = get_fd_by_id(target_ids[j]); // 获取目标fd
                                 text_pack_s2c.id = get_id_by_fd(connfd); // 获取发送者id并填写消息包字段

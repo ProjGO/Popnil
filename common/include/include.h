@@ -17,6 +17,8 @@
 #include <arpa/inet.h>
 #include <errno.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <gtk/gtk.h>
 //#include "../server/database.h"
 //#include "../include/rio.h"
 //#include "../include/socket_utils.h"

@@ -29,16 +29,10 @@ int main(int argc, char **argv)
     memset(FD_chat,0, sizeof(FD_chat));
     memset(FD_file,0,sizeof(FD_file));
 
-    int listenfd, fd_log, port,fd_chat,fd_file;
+    int listenfd, fd_log, port, fd_chat, fd_file;
     socklen_t clientlen = sizeof(struct sockaddr_in);
     struct sockaddr_in clientaddr;
-//
-//    if(argc != 2)
-//    {
-//        fprintf(stderr, "usage: %s <port>\n", argv[0]);
-//        exit(0);
-//    }
-//    port = atoi(argv[1]);
+
     port=DEFAULT_PORT;
     listenfd = open_listenfd_old(port);
     init_pool(listenfd, &pool_log);
@@ -75,8 +69,8 @@ int main(int argc, char **argv)
                         FD_chat[s->id]=fd_chat;
                         FD_file[s->id]=fd_file;
                         add_client(fd_log, &pool_log);
-                        add_client(fd_chat,&pool_chat);
-                        add_client(fd_file,&pool_file);
+//                        add_client(fd_chat,&pool_chat);
+//                        add_client(fd_file,&pool_file);
                     }
                     else
                     {
@@ -110,6 +104,67 @@ int main(int argc, char **argv)
             rio_readnb(&newclient,&op,sizeof(OP_TYPE));
             switch (op)
             {
+                case TEXT_trans: { // 如果是文字信息
+                    char buf[1024]; // 接收消息用的buf
+                    if (rio_readnb(&newclient, buf, sizeof(text_pack_t))>=0) // 如果成功将消息包接收到buf指向的内存中
+                    {
+                        text_pack_t *text_pack_c2s = (text_pack_t *)buf; // 类型转换
+                        text_pack_t text_pack_s2c;
+                        int source_id = check_id_log(fd_log);
+
+                        general_array target_ids_array;
+                        int *target_ids = (int *) target_ids_array.data;
+                        if(text_pack_c2s->id < 10000) {
+                            target_ids_array.num = 1;
+                            target_ids[0] = text_pack_c2s->id;
+                        } else
+                            target_ids_array = listmembership(text_pack_c2s->id - 10000);
+
+                        for (int j = 0; j < target_ids_array.num; j++) {
+                            int target_fd = FD_chat[target_ids[j]]; // 获取目标fd
+                            int cur_target_id = target_ids[j];
+                            if(cur_target_id != source_id) {
+                                rio_writen(target_fd, &op, sizeof(OP_TYPE));
+                                text_pack_s2c.id = source_id; // 获取发送者id并填写消息包字段
+                                strcpy(text_pack_s2c.text, text_pack_c2s->text); // 将要转发的消息内容填写到要发送出去的消息包中
+                                rio_writen(target_fd, &text_pack_s2c, sizeof(text_pack_s2c)); // 发送消息包
+                                printf("%d: %s\n", text_pack_s2c.id, text_pack_s2c.text);
+                            }
+                        }
+                    }
+                    break;
+                };
+                case FILE_trans:
+                {
+                    size_t *file_buf;
+                    int filesize, target_id;
+                    int source_id = check_id_log(fd_log);
+                    file_buf = (size_t*)malloc(MAX_FILE_SIZE*sizeof(size_t));
+                    rio_readnb(&newclient, &target_id, sizeof(int));
+                    rio_readnb(&newclient, &filesize, sizeof(int)); // 接收文件大小
+                    rio_readnb(&newclient, &file_buf, filesize); // 接收文件
+
+                    general_array target_ids_array;
+                    int *target_ids = (int *) target_ids_array.data;
+                    if(target_id < 10000) {
+                        target_ids_array.num = 1;
+                        target_ids[0] = target_id;
+                    } else
+                        target_ids_array = listmembership(target_id-10000);
+
+                    for(int j = 0; j < target_ids_array.num; j++)
+                    {
+                        int target_fd = FD_chat[target_ids[j]];
+                        int cur_target_id = target_ids[j];
+                        if(cur_target_id != source_id) {
+                            rio_writen(target_fd, &op, sizeof(OP_TYPE));
+                            rio_writen(target_fd, &source_id, sizeof(int)); // 发送者id
+                            rio_writen(target_fd, &filesize, sizeof(int)); // 发送文件大小
+                            rio_writen(target_fd, file_buf, filesize); // 发送文件
+                        }
+                    }
+                    break;
+                }
                 case SEARCH_FRIEND://查找好友
                 {
                     oper_friend_info * s=(oper_friend_info*)malloc(sizeof(oper_friend_info));

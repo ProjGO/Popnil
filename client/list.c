@@ -1,6 +1,6 @@
 #include <gtk/gtk.h>
-#include <string.h>
-#include "../common/include/define.h"
+#include "../common/include/database.h"
+#include "../common/include/include.h"
 
 //extern local_user_info;
 extern GtkWidget *add_friends();
@@ -8,10 +8,17 @@ extern GtkWidget *add_groups();
 extern GtkWidget *chat(char *target_name, int *target_id);
 extern GtkWidget *group_chat();
 extern GtkWidget *setting();
+
 extern int usr_id;
 extern int fd_log,fd_chat,fd_file;
 extern rio_t rio_log, rio_chat, rio_file;
 extern void update_widget_bg(GtkWidget *widget, int w,int h, const gchar *img_file);
+extern client_info target;
+extern client_info my_info;
+extern general_array friendlist;
+
+extern int opend_list_idx2id[100];
+extern int max_chat_window_idx;
 GtkWidget *image_usericon;
 GtkWidget *window_list;
 GtkWidget *page_friend_vbox;
@@ -20,12 +27,25 @@ GtkWidget *search_entry_friend_list;
 #define MAX_LIST_NUM 100
 #define MAX_LIST_FRIEND_GROUP_NUM 100
 
+extern GtkWidget* id2button[MAX_USR_NUM];
+int get_id_by_button(GtkWidget *button) // 通过现在点击的按钮的指针取得对应的id
+{
+    for(int i = 0; i < MAX_USR_NUM; i++)
+        if(id2button[i] == button)
+            return i;
+    printf("没有找到对应这个按钮指针的id\n");
+    return -1;
+}
 
+/**添加一个好友列表或其群组列表
+ * page 好友界面&群组界面
+ * str 列表的名字
+ * 返回vbox来添加好友或群组
+ */
 general_array update_friend_info_c(rio_t *rio_log, int fd_log)
 {
     OP_TYPE type = UPDATE;
     int friend_num = 0;
-    client_info my_info;
     general_array friend_info_array;
     rio_writen(fd_log, &type, sizeof(OP_TYPE)); // 向服务器发送请求同步的op
     rio_writen(fd_log, &usr_id, sizeof(int)); // 发送自己的id
@@ -41,7 +61,7 @@ general_array update_friend_info_c(rio_t *rio_log, int fd_log)
     for(int i = 0; i < friend_num; i++)
     {
         //read(fd_log, &((client_info *)friend_info_array.data)[i], sizeof(client_info)); // 填进去
-        rio_readnb(rio_log, &((client_info *)friend_info_array.data)[i], sizeof(client_info));
+        read(fd_log, &((client_info *)friend_info_array.data)[i], sizeof(client_info));
         printf("%d : %d\n",i,((client_info *)friend_info_array.data)[i].id);
     }
 
@@ -123,6 +143,7 @@ static gint my_popup_handler (GtkWidget *widget, GdkEvent *event)
 GtkWidget* add_friend_group(GtkWidget* vbox, const char *str, const char *image_path)
 {
     GtkWidget* button = gtk_button_new();
+    // id2button[target_id] = button;
     GtkWidget* hbox = gtk_hbox_new(TRUE, 0);
     GtkWidget* name_label = gtk_label_new(str);
     GtkWidget* image = gtk_image_new_from_file(image_path);
@@ -141,20 +162,15 @@ GtkWidget* add_friend_group(GtkWidget* vbox, const char *str, const char *image_
     //设置button背景透
     gtk_button_set_relief(button, GTK_RELIEF_NONE);
     //点击信号
-    g_signal_connect(G_OBJECT(button), "clicked", G_CALLBACK(group_chat), NULL);
+    g_signal_connect(G_OBJECT(button), "clicked", G_CALLBACK(chat), NULL);
+    //target.id=usr_id;
+//    g_signal_connect(G_OBJECT(button), "clicked", G_CALLBACK(group_chat), NULL);
     g_signal_connect_swapped(GTK_OBJECT(button),"button_press_event",G_CALLBACK(my_popup_handler), GTK_OBJECT(filemenu));
     gtk_box_pack_start(GTK_BOX(vbox), button, TRUE, TRUE, 0);
     gtk_container_add(GTK_CONTAINER(button), hbox);
     gtk_box_pack_start(GTK_BOX(hbox), image, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(hbox), name_label, TRUE, TRUE, 0);
 
-//    struct remove_friend_from_list remove_button;
-//    remove_button.vbox = vbox;
-//    remove_button.button = button;
-//    struct remove_friend_from_list* data = &remove_button;
-//    g_signal_connect_swapped(G_OBJECT(menuitem), "activate", G_CALLBACK(remove_friend_group), data);
-
-    return button;
 }
 
 
@@ -343,8 +359,9 @@ void search_friend()
 
 void list()
 {
-
+    GtkWidget *window;
     GtkWidget *table;
+    GtkWidget *image_usericon;
     GtkWidget *label_username;
     GtkWidget *button_setting;
     GtkWidget *search_entry;
@@ -376,8 +393,8 @@ void list()
     image_usericon = gtk_image_new_from_file("../client/images/d_portrait.PNG");
     gtk_table_attach_defaults(GTK_TABLE(table), image_usericon, 1, 5, 1, 5);
 
-    label_username = gtk_label_new("XDX");
-    gtk_table_attach_defaults(GTK_TABLE(table),label_username, 5, 13, 1, 5);
+//    label_username = gtk_label_new(my_info.nickname);
+//    gtk_table_attach_defaults(GTK_TABLE(table),label_username, 5, 13, 1, 5);
 
     button_setting = create_button("../client/images/set.png", NULL);
     gtk_table_attach_defaults(GTK_TABLE(table),button_setting, 14, 16, 37, 40);
@@ -439,7 +456,6 @@ void list()
     add_list_groups(page_group_vbox, "我的同学", "666", "../client/images/emoji.png");
 
     //////zzk
-    general_array friendlist;
     friendlist = update_friend_info_c(&rio_log,fd_log);
 //    GtkWidget* my_friend_vbox =add_list(page_friend_vbox, "我的好友");
     client_info * tem = (client_info*) friendlist.data;
@@ -447,9 +463,14 @@ void list()
     {//zzk change
         add_list_friends(page_friend_vbox, "my friend", tem[i].nickname ,"../client/images/emoji.png");
 //        add_friend_group(my_friend_vbox,tem[i].nickname , "../client/images/emoji.png");
+        target = tem[i];
+        opend_list_idx2id[max_chat_window_idx]=target.id;
     }
     //add_list_groups("我的群组", "hahahqun", "../image.png");
 
+
+    label_username = gtk_label_new(my_info.nickname);
+    gtk_table_attach_defaults(GTK_TABLE(table),label_username, 5, 13, 1, 5);
 
     gtk_widget_show_all(window_list);
 
