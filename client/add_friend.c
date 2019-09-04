@@ -10,15 +10,17 @@ GtkWidget* id;
 GtkWidget* user_name;
 GtkWidget *search_entry;
 GtkWidget* frame;
+GtkWidget* add_friend_window;
 extern int fd_log,fd_chat,fd_file;
 char* default_image_path = "../client/images/friend_portrait.png";
 char* default_id = "1120173454";
 char* default_name = "xdx";
 extern GtkWidget *create_button(char *image_path, char *button_label);
 extern void update_widget_bg(GtkWidget *widget, int w,int h, const gchar *img_file);
-GtkWidget* add_friend_window;
-
-
+extern GtkWidget *window_list;
+extern GtkWidget *page_friend_vbox;
+extern void add_list_friends(GtkWidget* page, const char* list_name, const char* friend_name, const char* image);
+extern void list();
 
 void add(GtkWidget *window, gpointer data)
 {
@@ -48,14 +50,17 @@ void add(GtkWidget *window, gpointer data)
     type = GTK_MESSAGE_INFO ;
     dialog = gtk_message_dialog_new(NULL,
                                     GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, type ,
-                                    GTK_BUTTONS_OK,
-                                    message);
+            GTK_BUTTONS_OK,
+            message);
 
 //    client_info* new_friend=(client_info*)malloc(sizeof(client_info));
 //    read(fd_log,new_friend,sizeof(client_info));
 //    add_list_friends(page_friend_vbox, "my friend", msg->nickname, default_image_path);
 //    gtk_widget_show(page_friend_vbox);
+    
     gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(window_list);
+    list();
     gtk_widget_destroy(dialog);
 }
 void search(GtkWidget *window, gpointer data)
@@ -85,6 +90,8 @@ void search(GtkWidget *window, gpointer data)
     }
     else
     {
+//        add_list_friends(page_friend_vbox, "my friend", msg->nickname, default_image_path);
+//        gtk_widget_show(page_friend_vbox);
         gtk_label_set_text(user_name, msg->nickname);
         printf("%s\n", msg->nickname);
         char str_id[24];
@@ -123,7 +130,8 @@ GtkWidget *information_frame()
 
     button = create_button("../client/images/add.png", "添加");
     gtk_table_attach_defaults(GTK_TABLE(table), button, 5, 7, 9, 12);
-
+    g_signal_connect(GTK_OBJECT(button), "clicked", G_CALLBACK(add), NULL);
+    gtk_button_set_relief(button, GTK_RELIEF_NONE);
     return frame;
 }
 
@@ -163,6 +171,7 @@ GtkWidget *add_friends()
     frame = information_frame();
     gtk_table_attach_defaults(GTK_TABLE(table),frame, 2, 18, 6, 18);
     update_widget_bg(add_friend_window,400, 400, "../client/images/bg/7.jpg");
+
 
 
     gtk_widget_show_all(add_friend_window);
