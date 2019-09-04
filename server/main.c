@@ -115,6 +115,7 @@ int main(int argc, char **argv)
                         general_array target_ids_array;
                         int *target_ids = (int *) target_ids_array.data;
                         if(text_pack_c2s->id < 10000) {
+                            target_ids = (int*)malloc(sizeof(int));
                             target_ids_array.num = 1;
                             target_ids[0] = text_pack_c2s->id;
                         } else
@@ -131,6 +132,8 @@ int main(int argc, char **argv)
                                 printf("%d: %s\n", text_pack_s2c.id, text_pack_s2c.text);
                             }
                         }
+                        free(target_ids_array.data);
+                        target_ids_array.data = NULL;
                     }
                     break;
                 };
@@ -163,6 +166,8 @@ int main(int argc, char **argv)
                             rio_writen(target_fd, file_buf, filesize); // 发送文件
                         }
                     }
+                    free(target_ids_array.data);
+                    target_ids_array.data = NULL;
                     break;
                 }
                 case SEARCH_FRIEND://查找好友

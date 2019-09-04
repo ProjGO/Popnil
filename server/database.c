@@ -122,7 +122,7 @@ client_info getuser (const int id)
 
               strcpy (ans.passwd, row[1]);
               strcpy (ans.nickname, row[2]);
-              ans.avatar = atoi (row[3]);
+              ans.portrait_idx = atoi (row[3]);
               strcpy (ans.bio, row[4]);
               strcpy (ans.birthday, row[5]);
             }
@@ -664,15 +664,15 @@ bool addgroupmessage (const time_t t, const int masterid, const int goalid, cons
 
 
 
-int main ()
-{
-
-  general_array ad = listgroup (1);
-  for (int i = 0; i < ad.num; i++)
-    {
-      printf("%d\n", ((int*)ad.data)[i]);
-    }
-  //printf("owner: %d\n", getowner (0));
-  return 0;
-}
+//int main ()
+//{
+//
+//  general_array ad = listgroup (1);
+//  for (int i = 0; i < ad.num; i++)
+//    {
+//      printf("%d\n", ((int*)ad.data)[i]);
+//    }
+//  //printf("owner: %d\n", getowner (0));
+//  return 0;
+//}
 

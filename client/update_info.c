@@ -6,7 +6,7 @@
 //#include "../common/include/include.h"
 //
 ////向服务器请求同步该用户所有好友的信息，返回保存这些信息的链表的头指针(头指针中无有效内容,只是指向下一个)
-//general_array update_friend_info_c(rio_t *rio_log, int fd_log)
+//general_array update_my_and_friend_info_c(rio_t *rio_log, int fd_log)
 //{
 //    OP_TYPE type = UPDATE;
 //    int friend_num;

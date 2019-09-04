@@ -61,16 +61,15 @@ void button_clicked (GtkWidget *window, gpointer data)
 
             pthread_t pid;
             pthread_create(&pid, NULL, thread_recv_msg, NULL);
-
+            gtk_widget_destroy(window_login);
             list();
-
         }
         else
             printf("%s\n",msg->err_msg);
     }
 }
 
-int login (int argc, char *argv[])
+int login(int argc, char *argv[])
 {
 
     GtkWidget *sign_button, *retrieve_button;
