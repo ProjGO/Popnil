@@ -80,7 +80,7 @@ int adduser (const char nick[], const char passwd[])
         {
           res = mysql_store_result (pconn);
           id = mysql_num_rows (res);
-          sprintf (comm, "insert into `userinfo` values (%d, '%s', '%s', 2, '', curdate(), 0, 0);", id, passwd, nick);
+          sprintf (comm, "insert into `userinfo` values (%d, '%s', '%s', 0, '', curdate(), 0, 0);", id, passwd, nick);
           puts (comm);
           if ( mysql_query (pconn, comm) )
             {
@@ -115,16 +115,21 @@ client_info getuser (const int id)
       if ( !mysql_query (pconn, comm) )
         {
           res = mysql_store_result (pconn);
-          row = mysql_fetch_row (res);
-          mysql_free_result (res);
+          if ( mysql_num_rows (res) > 0 )
+            {
+              row = mysql_fetch_row (res);
+              mysql_free_result (res);
 
-          strcpy (ans.passwd, row[1]);
-          strcpy (ans.nickname, row[2]);
-          ans.avatar = atoi (row[3]);
-          if(row[4]!=NULL)
-          strcpy (ans.bio, row[4]);
-          if(row[5]!=NULL)
-          strcpy (ans.birthday, row[5]);
+              strcpy (ans.passwd, row[1]);
+              strcpy (ans.nickname, row[2]);
+              ans.avatar = atoi (row[3]);
+              strcpy (ans.bio, row[4]);
+              strcpy (ans.birthday, row[5]);
+            }
+          else
+            {
+              ans.id = -1;
+            }
         }
       else
         {
@@ -242,6 +247,11 @@ bool addtag (const int masterid, const int goalid, const char text[])
   return suc;
 }
 
+general_array listtag (const int masterid, const int goalid)
+{
+
+}
+
 general_array listfriendship (const int id)
 {
   MYSQL *pconn;
@@ -299,15 +309,24 @@ bool deletefriendship (const int idA, const int idB)
               puts (comm);
               if ( !mysql_query (pconn, comm) )
                 {
-                  sprintf (comm, "delete from `friendship` where (`idA` = %d and `idB` = '%d') or (`idA` = %d and `idB` = %d);", idA, idB, idB, idA);
+                  sprintf (comm, "delete from `tag` where (`masterid` = %d and `goalid` = %d) or (`masterid` = %d and `goalid` = %d);", idA, idB, idB, idA);
                   puts (comm);
                   if ( !mysql_query (pconn, comm) )
                     {
-                      suc = true;
+                      sprintf (comm, "delete from `friendship` where (`idA` = %d and `idB` = '%d') or (`idA` = %d and `idB` = %d);", idA, idB, idB, idA);
+                      puts (comm);
+                      if ( !mysql_query (pconn, comm) )
+                        {
+                          suc = true;
+                        }
+                      else
+                        {
+                          fputs ("Failed to query while deleting friendships!\n", stderr);
+                        }
                     }
                   else
                     {
-                      fputs ("Failed to query while deleting friendships!\n", stderr);
+                      fputs ("Failed to query while deleting tags!\n", stderr);
                     }
                 }
               else
