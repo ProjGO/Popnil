@@ -6,7 +6,7 @@ This is not a normal open sourse project and may be unsafe.
 
 ## Installation
 
-###Pre-build configure guide
+### Pre-build configure guide
 
 MariaDB is needed. This is written in pure C and depends on GTK+-2.0
 #### For Debian GNU/Linux and Ubuntu
@@ -36,7 +36,7 @@ sudo pacman -S mariadb mariadb-clients gcc cmake make gtk2 pkgconf
 sudo mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
 ```
 
-To start the database, please
+#### Start the database
 
 ```bash
 # Start it immediately
