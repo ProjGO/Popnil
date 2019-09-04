@@ -13,14 +13,14 @@ MariaDB is needed. This is written in pure C and depends on GTK+-2.0
 
 ```bash
 sudo apt update
-sudo apt install mariadb-client mariadb-client libmariadbd-dev build-essencial cmake libgtk2.0-dev
+sudo apt install mariadb-client mariadb-client libmariadbd-dev build-essencial cmake libgtk2.0-dev firefox fonts-noto-color-emoji
 ```
 
 #### Fedora
 
 ```bash
 sudo dnf update
-sudo dnf install mariadb mariadb-server mariadb-devel gcc make pkgconfig cmake gtk2-devel
+sudo dnf install mariadb mariadb-server mariadb-devel gcc make pkgconfig cmake gtk2-devel firefox google-noto-emoji-fonts google-noto-emoji-color-fonts
 
 # If you want to setup a root password
 sudo mysql_secure_installation 
@@ -32,7 +32,7 @@ firewall-cmd --permanent --add-port=3306/tcp
 
 ```bash
 sudo pacman -Sy
-sudo pacman -S mariadb mariadb-clients gcc cmake make gtk2 pkgconf
+sudo pacman -S mariadb mariadb-clients gcc cmake make gtk2 pkgconf firefox noto-fonts-emoji
 sudo mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
 ```
 
